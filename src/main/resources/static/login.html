@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    body, html {
+      height: 100%;
+      width: 100%;
+      background: url('images/login.avif') no-repeat center center fixed;
+      background-size: cover;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    .overlay {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 0;
+    }
+
+    .login-container {
+      position: relative;
+      z-index: 1;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(15px);
+      border-radius: 12px;
+      padding: 40px 30px;
+      width: 90%;
+      max-width: 400px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+      animation: fadeInUp 1s ease;
+      color: #fff;
+    }
+
+    .login-container h2 {
+      text-align: center;
+      margin-bottom: 25px;
+    }
+
+    .input-group {
+      margin-bottom: 20px;
+    }
+
+    .input-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+    }
+
+    .input-group input {
+      width: 100%;
+      padding: 12px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      outline: none;
+      font-size: 16px;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 12px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .btn:hover {
+      background-color: #45a049;
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Loader */
+    #loaderOverlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255,255,255,0.8);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 999;
+    }
+
+    #loaderOverlay.show {
+      display: flex;
+    }
+
+    .loader {
+      border: 6px solid #f3f3f3;
+      border-top: 6px solid #4CAF50;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.4);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .modal.show {
+      display: flex;
+    }
+
+    .modal-content {
+      background: white;
+      padding: 25px;
+      border-radius: 12px;
+      text-align: center;
+      width: 90%;
+      max-width: 350px;
+      color: #333;
+    }
+
+    .modal-content h3 {
+      margin: 0;
+      color: #e53935;
+    }
+
+    .modal-content p {
+      margin: 15px 0;
+    }
+
+    .modal-content .btn {
+      background-color: #4CAF50;
+      color: white;
+    }
+
+    @media (max-width: 500px) {
+      .login-container {
+        padding: 30px 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="overlay"></div>
+
+<!-- Loader -->
+<div id="loaderOverlay">
+  <div>
+    <div class="loader"></div>
+    <p style="text-align:center; margin-top: 10px; font-weight: bold;">Logging in...</p>
+  </div>
+</div>
+
+<!-- Error Modal -->
+<div class="modal" id="messageModal">
+  <div class="modal-content">
+    <h3 id="messageTitle">Login Failed</h3>
+    <p id="messageText"></p>
+    <button class="btn" onclick="closeModal()">Okay</button>
+  </div>
+</div>
+
+<!-- Login Box -->
+<div class="login-container">
+  <h2>Welcome Back</h2>
+  <form onsubmit="login(event)">
+    <div class="input-group">
+      <label for="username">Username</label>
+      <input type="text" id="username" required />
+    </div>
+    <div class="input-group">
+      <label for="password">Password</label>
+      <input type="password" id="password" required />
+    </div>
+    <button type="submit" class="btn">Login</button>
+  </form>
+</div>
+
+<script>
+
+ const currentUrl = new URL(window.location.href);
+  const port = currentUrl.port ? `:${currentUrl.port}` : '';
+  const BASE_URL = `${currentUrl.protocol}//${currentUrl.hostname}${port}/`;
+
+  function showLoader() {
+    document.getElementById('loaderOverlay').classList.add('show');
+  }
+
+  function hideLoader() {
+    document.getElementById('loaderOverlay').classList.remove('show');
+  }
+
+  function showModal(message) {
+    document.getElementById('messageText').textContent = message;
+    document.getElementById('messageModal').classList.add('show');
+  }
+
+  function closeModal() {
+    document.getElementById('messageModal').classList.remove('show');
+  }
+
+  function encodeBase64(str) {
+    return btoa(str);
+  }
+
+  async function login(event) {
+    event.preventDefault();
+    showLoader();
+
+    const username = document.getElementById("username").value;
+    const password = document.getElementById("password").value;
+    const encodedPassword = encodeBase64(password);
+
+    try {
+      const response = await fetch(BASE_URL + "login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          userName: username,
+          password: encodedPassword
+        })
+      });
+
+      const result = await response.json();
+      hideLoader();
+
+      if (result.status === "SUCCESS") {
+        window.location.href = "students.html";
+      } else {
+        showModal(result.message || "Invalid username or password.");
+      }
+    } catch (error) {
+      hideLoader();
+      showModal("Could not connect to the server. Please try again later.");
+    }
+  }
+</script>
+
+</body>
+</html>

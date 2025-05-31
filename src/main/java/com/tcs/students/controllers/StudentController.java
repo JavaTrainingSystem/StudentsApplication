@@ -30,6 +30,9 @@ public class StudentController {
 
     @PostMapping
     public Student saveStudent(@RequestBody Student student) {
+
+        System.out.println(Thread.currentThread().getName() + ", Student Name : " + student.getName());
+
         return service.saveStudent(student);
     }
 
