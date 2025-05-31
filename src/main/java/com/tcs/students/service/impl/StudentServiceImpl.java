@@ -10,6 +10,7 @@ import com.tcs.students.service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.io.InputStreamResource;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -129,11 +130,12 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public List<Student> searchStudents(String name) {
+    public List<Student> searchStudents(String name, Integer pageNo, Integer pageSize) {
         List<Student> students = new ArrayList<>();
 
-        List<StudentEntity> studentEntities = studentRepo.searchStudents(name);
+        PageRequest pageRequest = PageRequest.of(pageNo - 1, pageSize);
 
+        List<StudentEntity> studentEntities = studentRepo.searchStudents(name, pageRequest);
 
         studentEntities.forEach(studentEntity -> {
             Student student = new Student();

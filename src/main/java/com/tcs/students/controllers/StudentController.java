@@ -73,8 +73,15 @@ public class StudentController {
     }
 
     @GetMapping("search")
-    public ResponseEntity<List<Student>> searchStudents(@RequestParam String name) {
-        return new ResponseEntity<>(service.searchStudents(name), HttpStatus.OK);
+    public ResponseEntity<List<Student>> searchStudents(@RequestParam String name, @RequestParam(required = false) Integer pageNo,
+                                                        @RequestParam(required = false) Integer pageSize) {
+
+        if (pageNo == null || pageSize == null) {
+            pageNo = 1;
+            pageSize = 500;
+        }
+
+        return new ResponseEntity<>(service.searchStudents(name, pageNo, pageSize), HttpStatus.OK);
     }
 
 }
