@@ -5,10 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.InputStream;
+import java.io.*;
 
 @Service
 public class LocalFileService implements FileService {
@@ -37,15 +34,8 @@ public class LocalFileService implements FileService {
     }
 
     @Override
-    public InputStream downloadFile(String filePath) {
-
-        try {
-            return new FileInputStream(filePath);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return null;
+    public InputStream downloadFile(String filePath) throws FileNotFoundException {
+        return new FileInputStream(filePath);
     }
 
     @Override

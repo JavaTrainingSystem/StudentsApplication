@@ -73,4 +73,9 @@ public class StudentController {
 
     }
 
+    @GetMapping("search")
+    public ResponseEntity<List<Student>> searchStudents(@RequestParam String name) {
+        return new ResponseEntity<>(service.searchStudents(name), HttpStatus.OK);
+    }
+
 }

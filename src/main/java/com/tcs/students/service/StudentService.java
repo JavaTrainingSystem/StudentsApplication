@@ -22,4 +22,6 @@ public interface StudentService {
     APIResponse uploadStudentDoc(MultipartFile file, Integer studentId);
 
     Map<String, Object> downloadStudentDoc(Integer studentId) throws IOException;
+
+    List<Student> searchStudents(String name);
 }

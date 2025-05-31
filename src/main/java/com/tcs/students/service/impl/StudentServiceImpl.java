@@ -127,4 +127,25 @@ public class StudentServiceImpl implements StudentService {
 
         return null;
     }
+
+    @Override
+    public List<Student> searchStudents(String name) {
+        List<Student> students = new ArrayList<>();
+
+        List<StudentEntity> studentEntities = studentRepo.searchStudents(name);
+
+
+        studentEntities.forEach(studentEntity -> {
+            Student student = new Student();
+            student.setId(studentEntity.getId());
+            student.setName(studentEntity.getName());
+            student.setMobile(studentEntity.getMobile());
+            students.add(student);
+        });
+
+
+        return students;
+    }
+
+
 }
