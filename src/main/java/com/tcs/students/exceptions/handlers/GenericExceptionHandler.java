@@ -6,6 +6,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.io.FileNotFoundException;
 
@@ -22,5 +24,12 @@ public class GenericExceptionHandler {
         return new ResponseEntity<>(new APIResponse(CommonConstants.FAILED, 400, e.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
+    @org.springframework.web.bind.annotation.ExceptionHandler(NoResourceFoundException.class)
+    public ModelAndView handleNotFoundError(NoResourceFoundException ex) {
+        ModelAndView mav = new ModelAndView();
+        mav.setViewName("notfound.html"); // This is the name of the static page (HTML file)
+        mav.setStatus(HttpStatus.OK);
+        return mav;
+    }
 
 }
