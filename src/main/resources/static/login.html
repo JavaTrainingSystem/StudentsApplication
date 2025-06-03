@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Login</title>
-  <script src="js/studentmanagement.js"></script>
-  <style>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Login</title>
+    <script src="js/studentmanagement.js"></script>
+    <style>
     * {
       margin: 0;
       padding: 0;
@@ -169,7 +169,8 @@
         padding: 30px 20px;
       }
     }
-  </style>
+
+    </style>
 </head>
 <body>
 
@@ -177,35 +178,35 @@
 
 <!-- Loader -->
 <div id="loaderOverlay">
-  <div>
-    <div class="loader"></div>
-    <p style="text-align:center; margin-top: 10px; font-weight: bold;">Logging in...</p>
-  </div>
+    <div>
+        <div class="loader"></div>
+        <p style="text-align:center; margin-top: 10px; font-weight: bold;">Logging in...</p>
+    </div>
 </div>
 
 <!-- Error Modal -->
 <div class="modal" id="messageModal">
-  <div class="modal-content">
-    <h3 id="messageTitle">Login Failed</h3>
-    <p id="messageText"></p>
-    <button class="btn" onclick="closeModal()">Okay</button>
-  </div>
+    <div class="modal-content">
+        <h3 id="messageTitle">Login Failed</h3>
+        <p id="messageText"></p>
+        <button class="btn" onclick="closeModal()">Okay</button>
+    </div>
 </div>
 
 <!-- Login Box -->
 <div class="login-container">
-  <h2>Welcome Back</h2>
-  <form onsubmit="login(event)">
-    <div class="input-group">
-      <label for="username">Username</label>
-      <input type="text" id="username" required />
-    </div>
-    <div class="input-group">
-      <label for="password">Password</label>
-      <input type="password" id="password" required />
-    </div>
-    <button type="submit" class="btn">Login</button>
-  </form>
+    <h2>Welcome Back</h2>
+    <form onsubmit="login(event)">
+        <div class="input-group">
+            <label for="username">Username</label>
+            <input type="text" id="username" required/>
+        </div>
+        <div class="input-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" required/>
+        </div>
+        <button type="submit" class="btn">Login</button>
+    </form>
 </div>
 
 <script>
@@ -255,6 +256,7 @@
       hideLoader();
 
       if (result.status === "SUCCESS") {
+        setTokenDetails(result.token);
         window.location.href = "students";
       } else {
         showModal(result.message || "Invalid username or password.");
@@ -264,6 +266,7 @@
       showModal("Could not connect to the server. Please try again later.");
     }
   }
+
 </script>
 
 </body>
