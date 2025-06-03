@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <title>Student Manager</title>
+  <script src="js/studentmanagement.js"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <style>
     :root {
@@ -380,9 +381,6 @@
 </div>
 
 <script>
-  const currentUrl = new URL(window.location.href);
-  const port = currentUrl.port ? `:${currentUrl.port}` : '';
-  const BASE_URL = `${currentUrl.protocol}//${currentUrl.hostname}${port}/`;
 
   let deleteId = null;
 
