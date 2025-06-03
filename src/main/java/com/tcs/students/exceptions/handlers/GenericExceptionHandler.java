@@ -24,12 +24,8 @@ public class GenericExceptionHandler {
         return new ResponseEntity<>(new APIResponse(CommonConstants.FAILED, 400, e.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
-    @org.springframework.web.bind.annotation.ExceptionHandler(NoResourceFoundException.class)
-    public ModelAndView handleNotFoundError(NoResourceFoundException ex) {
-        ModelAndView mav = new ModelAndView();
-        mav.setViewName("notfound.html"); // This is the name of the static page (HTML file)
-        mav.setStatus(HttpStatus.OK);
-        return mav;
+    @ExceptionHandler(NoResourceFoundException.class)
+    public String handleNotFoundError(NoResourceFoundException ex) {
+        return "redirect:/static/notfound.html";
     }
-
 }

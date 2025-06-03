@@ -24,8 +24,8 @@ public class WebMvcConfig implements WebMvcConfigurer {
                     @Override
                     protected Resource getResource(String resourcePath, Resource location) throws IOException {
 
-                        if (resourcePath.endsWith("notfound")) {
-                            return location.createRelative("static/notfound.html");
+                        if (resourcePath.endsWith("notfound") || resourcePath.endsWith("notfound.html")) {
+                            return location.createRelative("/notfound.html");
                         }
 
                         Resource resource = location.createRelative(resourcePath + ".html");
