@@ -87,6 +87,16 @@
       background-color: #45a049;
     }
 
+    .back-btn {
+      background: transparent;
+      border: none;
+      color: #fff;
+      font-size: 14px;
+      margin-bottom: 10px;
+      text-align: left;
+      cursor: pointer;
+    }
+
     @keyframes fadeInUp {
       from { opacity: 0; transform: translateY(30px); }
       to { opacity: 1; transform: translateY(0); }
@@ -169,8 +179,7 @@
         padding: 30px 20px;
       }
     }
-
-    </style>
+  </style>
 </head>
 <body>
 
@@ -184,7 +193,7 @@
     </div>
 </div>
 
-<!-- Error Modal -->
+<!-- Modal -->
 <div class="modal" id="messageModal">
     <div class="modal-content">
         <h3 id="messageTitle">Login Failed</h3>
@@ -193,23 +202,37 @@
     </div>
 </div>
 
-<!-- Login Box -->
-<div class="login-container">
+<!-- Login Form -->
+<div class="login-container" id="loginForm">
     <h2>Welcome Back</h2>
     <form onsubmit="login(event)">
         <div class="input-group">
             <label for="username">Username</label>
-            <input type="text" id="username" required/>
+            <input type="text" id="username" required />
         </div>
         <div class="input-group">
             <label for="password">Password</label>
-            <input type="password" id="password" required/>
+            <input type="password" id="password" required />
         </div>
         <button type="submit" class="btn">Login</button>
     </form>
 </div>
 
+<!-- OTP Form -->
+<div class="login-container" id="otpForm" style="display: none;">
+    <button class="back-btn" onclick="backToLogin()">← Back to Login</button>
+    <h2>Enter OTP</h2>
+    <form onsubmit="verifyOTP(event)">
+        <div class="input-group">
+            <label for="otp">OTP</label>
+            <input type="text" id="otp" required />
+        </div>
+        <button type="submit" class="btn">Verify OTP</button>
+    </form>
+</div>
+
 <script>
+  let mfaToken = null;
 
   function showLoader() {
     document.getElementById('loaderOverlay').classList.add('show');
@@ -228,6 +251,11 @@
     document.getElementById('messageModal').classList.remove('show');
   }
 
+  function backToLogin() {
+    document.getElementById('otpForm').style.display = "none";
+    document.getElementById('loginForm').style.display = "block";
+  }
+
   function encodeBase64(str) {
     return btoa(str);
   }
@@ -243,9 +271,7 @@
     try {
       const response = await fetch(BASE_URL + "login", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           userName: username,
           password: encodedPassword
@@ -256,8 +282,14 @@
       hideLoader();
 
       if (result.status === "SUCCESS") {
-        setTokenDetails(result.token);
-        window.location.href = "students";
+        if (result.mfaenabled === true) {
+          mfaToken = result.token;
+          document.getElementById("loginForm").style.display = "none";
+          document.getElementById("otpForm").style.display = "block";
+        } else {
+          setTokenDetails(result.token);
+          window.location.href = "students";
+        }
       } else {
         showModal(result.message || "Invalid username or password.");
       }
@@ -267,6 +299,36 @@
     }
   }
 
+  async function verifyOTP(event) {
+    event.preventDefault();
+    showLoader();
+
+    const otp = document.getElementById("otp").value;
+
+    try {
+      const response = await fetch(BASE_URL + "verify-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          token: mfaToken,
+          otp: otp
+        })
+      });
+
+      const result = await response.json();
+      hideLoader();
+
+      if (result.status === "SUCCESS") {
+        setTokenDetails(result.token);
+        window.location.href = "students";
+      } else {
+        showModal(result.message || "Invalid OTP.");
+      }
+    } catch (error) {
+      hideLoader();
+      showModal("Could not verify OTP. Please try again.");
+    }
+  }
 </script>
 
 </body>
