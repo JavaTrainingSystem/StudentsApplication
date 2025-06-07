@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>OTP Verification</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 0;
+    }
+    .email-container {
+      max-width: 600px;
+      margin: 30px auto;
+      background-color: #ffffff;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
+    }
+    .header {
+      text-align: center;
+      padding-bottom: 20px;
+    }
+    .header h2 {
+      color: #2b7a78;
+    }
+    .otp-code {
+      font-size: 28px;
+      color: #17252a;
+      text-align: center;
+      margin: 20px 0;
+      letter-spacing: 6px;
+    }
+    .message {
+      font-size: 16px;
+      color: #555;
+      text-align: center;
+    }
+    .footer {
+      text-align: center;
+      font-size: 13px;
+      color: #999;
+      margin-top: 40px;
+    }
+  </style>
+</head>
+<body>
+<div class="email-container">
+  <div class="header">
+    <h2>OTP Verification</h2>
+  </div>
+  <div class="message">
+    Use the following OTP to complete your action:
+  </div>
+  <div class="otp-code">
+    <strong>{{OTP_CODE}}</strong>
+  </div>
+  <div class="message">
+    This code is valid for the next 5 minutes. Do not share it with anyone.
+  </div>
+  <div class="footer">
+    &copy; 2025 Your Company. All rights reserved.
+  </div>
+</div>
+</body>
+</html>

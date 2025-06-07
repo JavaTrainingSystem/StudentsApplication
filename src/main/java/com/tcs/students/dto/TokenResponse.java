@@ -9,6 +9,15 @@ public class TokenResponse extends APIResponse {
         this.token = token;
     }
 
+    private boolean isMFAEnabled;
+
+    public boolean isMFAEnabled() {
+        return isMFAEnabled;
+    }
+
+    public void setMFAEnabled(boolean MFAEnabled) {
+        isMFAEnabled = MFAEnabled;
+    }
 
     public String getToken() {
         return token;

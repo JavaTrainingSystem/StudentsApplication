@@ -18,6 +18,12 @@ public class UserEntity {
     @Column(name = "password")
     private String password;
 
+    @Column(name = "mfa_enabled")
+    private String mfaEnabled;
+
+    @Column(name = "email")
+    private String email;
+
     public Integer getUserId() {
         return userId;
     }
@@ -40,5 +46,21 @@ public class UserEntity {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getMfaEnabled() {
+        return mfaEnabled;
+    }
+
+    public void setMfaEnabled(String mfaEnabled) {
+        this.mfaEnabled = mfaEnabled;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }

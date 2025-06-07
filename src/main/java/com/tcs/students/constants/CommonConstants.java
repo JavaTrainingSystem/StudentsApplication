@@ -9,4 +9,6 @@ public class CommonConstants {
 
     public static final String FAILED = "FAILED";
 
+    public static final String YES = "Y";
+
 }

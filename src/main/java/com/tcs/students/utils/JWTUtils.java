@@ -16,7 +16,13 @@ public class JWTUtils {
     public static final SecretKey SECRECT_KEY = new SecretKeySpec(Base64.getDecoder().decode(
             "kxbS8M/cCKlZJCwadZ02tYJwS9U094P/J8J5eB9tPKM0wqg63N4yvBDhkY3CBGPD9FEitkZXxra7yqLgd5m+SA=="), SignatureAlgorithm.HS512.getJcaName());
 
+
+    public static final SecretKey MFA_SECRECT_KEY = new SecretKeySpec(Base64.getDecoder().decode(
+            "kxbS8M/cCKlZJCwadZ02tYJwS9U094P/J8J5eB9tPKM0wqg63N4yvBDhkY3CBGPD9FEitkZXxra7yqLgd5m+SA=="), SignatureAlgorithm.HS512.getJcaName());
+
     private final long expireAfterMillis = 10 * 60 * 1000;
+
+    private final long expireMFAAfterMillis = 2 * 60 * 1000;
 
 
     public String createToken(String userName) {
@@ -38,6 +44,26 @@ public class JWTUtils {
 
             Jwts.parserBuilder()
                     .setSigningKey(SECRECT_KEY)  // use the same SecretKey object used for signing
+                    .build()
+                    .parseClaimsJws(token);
+        } catch (JwtException e) {
+            return false;
+        }
+        return true;
+    }
+
+    public String createMFAToken(String userName) {
+        return Jwts.builder().setSubject(userName)
+                .setIssuer("student-management")
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + expireMFAAfterMillis))
+                .signWith(MFA_SECRECT_KEY, SignatureAlgorithm.HS512).compact();
+    }
+
+    public boolean validateMFAToken(String token) {
+        try {
+            Jwts.parserBuilder()
+                    .setSigningKey(MFA_SECRECT_KEY)
                     .build()
                     .parseClaimsJws(token);
         } catch (JwtException e) {
