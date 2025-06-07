@@ -13,9 +13,8 @@ import java.util.Date;
 @Component
 public class JWTUtils {
 
-    private final String SECRECT_KEY = "kxbS8M/cCKlZJCwadZ02tYJwS9U094P/J8J5eB9tPKM0wqg63N4yvBDhkY3CBGPD9FEitkZXxra7yqLgd5m+SA==";
-
-    private SecretKey key = new SecretKeySpec(Base64.getDecoder().decode(SECRECT_KEY), SignatureAlgorithm.HS512.getJcaName());
+    public static final SecretKey SECRECT_KEY = new SecretKeySpec(Base64.getDecoder().decode(
+            "kxbS8M/cCKlZJCwadZ02tYJwS9U094P/J8J5eB9tPKM0wqg63N4yvBDhkY3CBGPD9FEitkZXxra7yqLgd5m+SA=="), SignatureAlgorithm.HS512.getJcaName());
 
     private final long expireAfterMillis = 10 * 60 * 1000;
 
@@ -25,7 +24,7 @@ public class JWTUtils {
                 .setIssuer("student-management")
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expireAfterMillis))
-                .signWith(key, SignatureAlgorithm.HS512).compact();
+                .signWith(SECRECT_KEY, SignatureAlgorithm.HS512).compact();
     }
 
     public boolean validateToken(String token) {
@@ -38,7 +37,7 @@ public class JWTUtils {
             token = token.replace("Bearer ", "");
 
             Jwts.parserBuilder()
-                    .setSigningKey(key)  // use the same SecretKey object used for signing
+                    .setSigningKey(SECRECT_KEY)  // use the same SecretKey object used for signing
                     .build()
                     .parseClaimsJws(token);
         } catch (JwtException e) {
