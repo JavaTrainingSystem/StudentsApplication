@@ -1,8 +1,6 @@
 package com.tcs.students.utils;
 
-import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
@@ -22,7 +20,7 @@ public class JWTUtils {
 
     private final long expireAfterMillis = 10 * 60 * 1000;
 
-    private final long expireMFAAfterMillis = 2 * 60 * 1000;
+    private final long expireMFAAfterMillis = 5 * 60 * 1000;
 
 
     public String createToken(String userName) {
@@ -70,6 +68,15 @@ public class JWTUtils {
             return false;
         }
         return true;
+    }
+
+    public String getMFALoggedUserName(String token) {
+        Jws<Claims> claimsJws = Jwts.parserBuilder()
+                .setSigningKey(JWTUtils.MFA_SECRECT_KEY)  // use the same SecretKey object used for signing
+                .build()
+                .parseClaimsJws(token);
+
+        return claimsJws.getBody().getSubject();
     }
 
 }

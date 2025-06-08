@@ -1,7 +1,9 @@
 package com.tcs.students.controllers;
 
+import com.tcs.students.constants.CommonConstants;
 import com.tcs.students.dto.APIResponse;
 import com.tcs.students.service.LoginService;
+import com.tcs.students.utils.JWTUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,8 +20,11 @@ public class LoginController {
 
     private final LoginService loginService;
 
-    public LoginController(LoginService loginService) {
+    private final JWTUtils jwtUtils;
+
+    public LoginController(LoginService loginService, JWTUtils jwtUtils) {
         this.loginService = loginService;
+        this.jwtUtils = jwtUtils;
     }
 
 
@@ -29,6 +34,22 @@ public class LoginController {
         String encodedPassword = payload.get("password");
         String password = new String(Base64.getDecoder().decode(encodedPassword));
         return new ResponseEntity<>(loginService.login(userName, password), HttpStatus.OK);
+    }
+
+
+    @PostMapping("verify-otp")
+    public ResponseEntity<APIResponse> verifyOtp(@RequestBody Map<String, String> payload) {
+        String token = payload.get("token");
+        String otp = payload.get("otp");
+
+        if (!jwtUtils.validateMFAToken(token)) {
+            return new ResponseEntity<>(new APIResponse(CommonConstants.FAILED,
+                    401, "Session Expired"), HttpStatus.UNAUTHORIZED);
+        }
+
+        APIResponse apiResponse = loginService.verifyOtp(token, otp);
+
+        return new ResponseEntity<>(apiResponse, HttpStatus.valueOf(apiResponse.getStatusCode()));
     }
 
 }

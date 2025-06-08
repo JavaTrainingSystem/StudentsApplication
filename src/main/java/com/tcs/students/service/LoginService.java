@@ -6,4 +6,5 @@ public interface LoginService {
 
     APIResponse login(String userName, String password);
 
+    APIResponse verifyOtp(String token, String otp);
 }
