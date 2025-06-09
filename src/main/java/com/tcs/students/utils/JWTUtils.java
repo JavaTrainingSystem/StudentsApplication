@@ -16,7 +16,7 @@ public class JWTUtils {
 
 
     public static final SecretKey MFA_SECRECT_KEY = new SecretKeySpec(Base64.getDecoder().decode(
-            "kxbS8M/cCKlZJCwadZ02tYJwS9U094P/J8J5eB9tPKM0wqg63N4yvBDhkY3CBGPD9FEitkZXxra7yqLgd5m+SA=="), SignatureAlgorithm.HS512.getJcaName());
+            "iKJtshrWLSajf6gEx+V37xjakP3+iEU9zMJt0a+d511uoUNQrV6UW8fCjOl/QI4lUmYpeWOeTvF0RK9+N6DnzQ=="), SignatureAlgorithm.HS512.getJcaName());
 
     private final long expireAfterMillis = 10 * 60 * 1000;
 
