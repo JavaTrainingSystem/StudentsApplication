@@ -14,8 +14,9 @@ public class OTPEntity {
     @Column(name = "otp_id")
     private Integer otpId;
 
-    @Column(name = "user_id")
-    private Integer userId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private UserEntity user;
 
     @Column(name = "otp")
     private String otp;
@@ -34,12 +35,12 @@ public class OTPEntity {
         this.otpId = otpId;
     }
 
-    public Integer getUserId() {
-        return userId;
+    public UserEntity getUser() {
+        return user;
     }
 
-    public void setUserId(Integer userId) {
-        this.userId = userId;
+    public void setUser(UserEntity user) {
+        this.user = user;
     }
 
     public String getOtp() {

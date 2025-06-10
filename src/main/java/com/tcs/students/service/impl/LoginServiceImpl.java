@@ -21,6 +21,7 @@ import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 @Service
 public class LoginServiceImpl implements LoginService {
@@ -64,7 +65,7 @@ public class LoginServiceImpl implements LoginService {
 
             entity.setOtp(otp);
 
-            entity.setUserId(user.getUserId());
+            entity.setUser(user);
 
             entity.setExpiredTime(calendar.getTime());
 

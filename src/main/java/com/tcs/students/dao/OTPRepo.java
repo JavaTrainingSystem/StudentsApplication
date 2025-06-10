@@ -13,7 +13,7 @@ public interface OTPRepo extends JpaRepository<OTPEntity, Integer> {
 
     @Query("SELECT CASE WHEN COUNT(o) > 0 THEN true ELSE false END " +
             "FROM OTPEntity o " +
-            "WHERE o.userId = :userId AND o.otp = :otp AND o.expiredTime > CURRENT_TIMESTAMP")
+            "WHERE o.user.userId = :userId AND o.otp = :otp AND o.expiredTime > CURRENT_TIMESTAMP")
     boolean isOtpValid(@Param("userId") Integer userId, @Param("otp") String otp);
 
     @Modifying

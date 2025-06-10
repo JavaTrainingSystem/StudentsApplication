@@ -2,6 +2,8 @@ package com.tcs.students.entity;
 
 import jakarta.persistence.*;
 
+import java.util.List;
+
 @Entity
 @Table(name = "users")
 public class UserEntity {
@@ -23,6 +25,9 @@ public class UserEntity {
 
     @Column(name = "email")
     private String email;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+    private List<OTPEntity> otps;
 
     public Integer getUserId() {
         return userId;
@@ -62,5 +67,13 @@ public class UserEntity {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public List<OTPEntity> getOtps() {
+        return otps;
+    }
+
+    public void setOtps(List<OTPEntity> otps) {
+        this.otps = otps;
     }
 }
