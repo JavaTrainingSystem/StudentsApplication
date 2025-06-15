@@ -878,7 +878,61 @@ tbody tr {
   margin-top: 10px;
 }
 </style>
+    <style>
+  .sub-tab-content, .sub-sub-tab-content {
+    padding: 20px 0;
+  }
 
+  .tab.sub-tab, .tab.sub-sub-tab {
+    font-size: 14px;
+    padding: 6px 16px;
+    border-radius: 6px 6px 0 0;
+    background: #fff;
+    border: 1px solid #ccc;
+  }
+
+  .tab.sub-tab.active, .tab.sub-sub-tab.active {
+    background: #e7f7ec;
+    color: #4CAF50;
+    border-bottom: 2px solid white;
+  }
+</style>
+
+    <style>
+
+    .dashboard-chart {
+  width: 350px;
+  height: 260px;
+  padding: 16px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+  overflow: hidden;
+}
+
+
+.dashboard-chart canvas {
+  width: 100% !important;
+  height: 180px !important; /* 👈 adjust chart height */
+}
+
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* 👈 make columns smaller */
+  gap: 16px;
+  padding: 10px;
+  justify-items: center; /* center chart in column */
+}
+
+@media (max-width: 600px) {
+  .dashboard-chart {
+    width: 90%;
+    max-height: 250px;
+  }
+}
+
+    </style>
 </head>
 <body>
 
@@ -1047,8 +1101,76 @@ tbody tr {
         <div class="table-wrapper">Development in progress</div>
     </div>
     <div class="tab-content" id="tab4">
-        <div class="table-wrapper">Development in progress</div>
+        <div class="tabs" style="justify-content: flex-start;">
+            <div class="tab sub-tab active" onclick="switchSubTab('appStorage')">App Storage</div>
+            <div class="tab sub-tab" onclick="switchSubTab('longRunningQueries')">Long Running Queries</div>
+            <div class="tab sub-tab" onclick="switchSubTab('advanced')">Advanced</div>
+        </div>
+
+        <!-- Sub-tab content -->
+        <div id="appStorage" class="sub-tab-content">
+            <div class="table-wrapper" id="appStorageWrapper">
+                <div id="mypiechart" class="top-section">
+                    <div class="top-right">
+                        <canvas id="pieCanvas" class="pie-chart" width="150" height="150"></canvas>
+                        <div class="tooltip" id="tooltip"></div>
+                        <div class="storage-label" id="totalSizeLabel"></div>
+                    </div>
+                </div>
+                <div class="table-container">
+                    <p id="infoMessagePara"></p>
+                    <table id="dynamicTable"></table>
+                </div>
+            </div>
+
+        </div>
+
+        <div id="longRunningQueries" class="sub-tab-content" style="display: none;">
+            <div class="table-wrapper">
+                <div class="table-container">
+                    <p id="longRunningInfoMessage"></p>
+                    <table id="longRunningTable"></table>
+                </div>
+            </div>
+        </div>
+
+
+        <div id="advanced" class="sub-tab-content" style="display: none;">
+            <div class="tabs" style="margin-left: 10px;">
+                <div class="tab sub-sub-tab active" onclick="switchAdvancedTab('connections')">Connections</div>
+                <div class="tab sub-sub-tab" onclick="switchAdvancedTab('dashboard')">Dashboard</div>
+            </div>
+            <div id="connections" class="sub-sub-tab-content">
+                <div class="table-wrapper">
+                    <div class="table-container">
+                        <p id="connectionsInfoMessage"></p>
+                        <table id="connectionsTable"></table>
+                    </div>
+                </div>
+            </div>
+
+            <div id="dashboard" class="sub-sub-tab-content" style="display: none;">
+                <div class="dashboard-grid">
+                    <div class="dashboard-chart">
+                        <h4>Server Sessions</h4>
+                        <canvas id="serverSessionsChart"></canvas>
+                    </div>
+
+                    <div class="dashboard-chart">
+                        <h4>Transactions per Second</h4>
+                        <canvas id="transactionsChart"></canvas>
+                    </div>
+
+                    <div class="dashboard-chart">
+                        <h4>Block IO</h4>
+                        <canvas id="blockIOChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+        </div>
     </div>
+
 </div>
 
 
@@ -1210,7 +1332,6 @@ if(getSubFromJWT()=="admin"){
     adminFlag = true;
 }
 
-
 function switchTab(tabId) {
   // Hide all tab content
   document.querySelectorAll('.tab-content').forEach(tab => {
@@ -1229,11 +1350,18 @@ function switchTab(tabId) {
 
   const tabs = document.querySelectorAll('.tab');
   tabs.forEach(t => {
-    if (t.onclick.toString().includes(tabId)) {
+    if (t.getAttribute('onclick') && t.getAttribute('onclick').includes(tabId)) {
       t.classList.add('active');
     }
   });
+
+  // 👉 Auto-select default sub-tab if DB Monitoring
+  if (tabId === 'tab4') {
+    switchSubTab('appStorage'); // Auto open App Storage
+    switchAdvancedTab('connections'); // Optional: default for nested Advanced tab
+  }
 }
+
 
  window.onload = function () {
     const allTabs = document.querySelectorAll('.tab');
@@ -1564,6 +1692,425 @@ renderUsers();
 </script>
 
 
+<script>
+function switchSubTab(tabId) {
+  // Hide all primary sub-tab content
+  document.querySelectorAll('.sub-tab-content').forEach(el => el.style.display = 'none');
+  document.querySelectorAll('.tab.sub-tab').forEach(el => el.classList.remove('active'));
+
+  // Show selected primary sub-tab
+  document.getElementById(tabId).style.display = 'block';
+
+  const tab = Array.from(document.querySelectorAll('.tab.sub-tab'))
+    .find(t => t.getAttribute('onclick').includes(tabId));
+  if (tab) tab.classList.add('active');
+
+  // 👉 Auto-click Connections when Advanced is selected
+  if (tabId === 'advanced') {
+    switchAdvancedTab('connections');
+  }
+
+
+   if (tabId === 'appStorage') {
+    document.getElementById('appStorage').style.display = 'block';
+    loadAppStorageData();
+  }
+
+  if (tabId === 'longRunningQueries') {
+    loadLongRunningQueriesData();
+}
+
+}
+
+
+
+function switchAdvancedTab(tabId) {
+  document.querySelectorAll('.sub-sub-tab-content').forEach(el => el.style.display = 'none');
+  document.querySelectorAll('.tab.sub-sub-tab').forEach(el => el.classList.remove('active'));
+
+  document.getElementById(tabId).style.display = 'block';
+  const tab = Array.from(document.querySelectorAll('.tab.sub-sub-tab'))
+    .find(t => t.getAttribute('onclick').includes(tabId));
+  if (tab) tab.classList.add('active');
+
+
+if (tabId === 'connections') {
+    loadConnectionsData();
+}
+
+if (tabId === 'dashboard') {
+    loadDashboardCharts();
+}
+
+}
+
+
+
+</script>
+
+<script>
+function getRandomColor() {
+    return `hsl(${Math.floor(Math.random() * 360)}, 70%, 60%)`;
+}
+
+function loadAppStorageData() {
+    showLoader("Loading DB Stats...");
+
+    fetch('/api/db/stats?type=schema', {
+        headers: {
+            'Authorization': getToken()
+        }
+    })
+    .then(res => res.json())
+    .then(data => {
+        hideLoader();
+
+        if (!data || !data.chartData || !data.tableData) {
+            document.getElementById('infoMessagePara').innerText = "No data available";
+            return;
+        }
+
+        drawPieChart(data.chartData, data.totalDBStorage);
+        renderAppStorageTable(data.tableData);
+    })
+    .catch(err => {
+        hideLoader();
+        console.error("App Storage Load Error:", err);
+        document.getElementById('infoMessagePara').innerText = "Failed to load App Storage data.";
+    });
+}
+
+function drawPieChart(chartData, totalStorage) {
+    const canvas = document.getElementById("pieCanvas");
+    const ctx = canvas.getContext("2d");
+    const tooltip = document.getElementById("tooltip");
+    const totalLabel = document.getElementById("totalSizeLabel");
+    const centerX = canvas.width / 2;
+    const centerY = canvas.height / 2;
+    const radius = canvas.width / 2;
+    const total = chartData.reduce((sum, row) => sum + row.size, 0);
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    let currentAngle = -0.5 * Math.PI;
+    const segments = [];
+
+    chartData.forEach(row => {
+        const color = getRandomColor();
+        const value = row.size;
+        const percent = value / total;
+        const angle = percent * 2 * Math.PI;
+        const startAngle = currentAngle;
+        const endAngle = currentAngle + angle;
+
+        ctx.beginPath();
+        ctx.moveTo(centerX, centerY);
+        ctx.arc(centerX, centerY, radius, startAngle, endAngle);
+        ctx.closePath();
+        ctx.fillStyle = color;
+        ctx.fill();
+
+        segments.push({ startAngle, endAngle, label: `${row.name}: ${(percent * 100).toFixed(1)}%` });
+        currentAngle = endAngle;
+    });
+
+    totalLabel.textContent = "Storage Size: " + totalStorage;
+
+    canvas.onmousemove = function (e) {
+        const rect = canvas.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const dx = x - centerX;
+        const dy = y - centerY;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        let angle = Math.atan2(dy, dx);
+        if (angle < -0.5 * Math.PI) angle += 2 * Math.PI;
+
+        if (distance <= radius) {
+            for (const s of segments) {
+                if (angle >= s.startAngle && angle <= s.endAngle) {
+                    tooltip.style.display = "block";
+                    tooltip.style.left = `${e.clientX + 10}px`;
+                    tooltip.style.top = `${e.clientY - 20}px`;
+                    tooltip.textContent = s.label;
+                    return;
+                }
+            }
+        }
+
+        tooltip.style.display = "none";
+    };
+}
+
+function renderAppStorageTable(tableData) {
+    const table = document.getElementById("dynamicTable");
+    table.innerHTML = ""; // clear previous
+
+    const thead = document.createElement("thead");
+    const headerRow = document.createElement("tr");
+    tableData[0].forEach(header => {
+        const th = document.createElement("th");
+        th.textContent = header;
+        headerRow.appendChild(th);
+    });
+    thead.appendChild(headerRow);
+    table.appendChild(thead);
+
+    const tbody = document.createElement("tbody");
+    tableData.slice(1).forEach(row => {
+        const tr = document.createElement("tr");
+        row.forEach(cell => {
+            const td = document.createElement("td");
+            td.textContent = cell;
+            tr.appendChild(td);
+        });
+        tbody.appendChild(tr);
+    });
+    table.appendChild(tbody);
+}
+</script>
+
+
+<script>
+function loadLongRunningQueriesData() {
+    showLoader("Loading long running queries...");
+
+    fetch('/api/db/stats?type=longRunningQueries', {
+        headers: {
+            'Authorization': getToken()
+        }
+    })
+    .then(res => res.json())
+    .then(data => {
+        hideLoader();
+
+        const infoPara = document.getElementById("longRunningInfoMessage");
+        const table = document.getElementById("longRunningTable");
+
+        if (!data || !data.tableData || data.tableData.length < 2) {
+            infoPara.innerText = "No long running queries found.";
+            table.innerHTML = "";
+            return;
+        }
+
+        infoPara.innerText = "";
+        renderLongRunningQueriesTable(data.tableData);
+    })
+    .catch(err => {
+        hideLoader();
+        console.error("Error loading long running queries:", err);
+        document.getElementById("longRunningInfoMessage").innerText = "Failed to load data.";
+    });
+}
+
+function renderLongRunningQueriesTable(tableData) {
+    const table = document.getElementById("longRunningTable");
+    table.innerHTML = "";
+
+    const thead = document.createElement("thead");
+    const headerRow = document.createElement("tr");
+    tableData[0].forEach(header => {
+        const th = document.createElement("th");
+        th.textContent = header;
+        headerRow.appendChild(th);
+    });
+    thead.appendChild(headerRow);
+    table.appendChild(thead);
+
+    const tbody = document.createElement("tbody");
+    tableData.slice(1).forEach(row => {
+        const tr = document.createElement("tr");
+        row.forEach(cell => {
+            const td = document.createElement("td");
+            td.textContent = cell;
+            tr.appendChild(td);
+        });
+        tbody.appendChild(tr);
+    });
+    table.appendChild(tbody);
+}
+</script>
+
+
+<script>
+function loadConnectionsData() {
+    showLoader("Loading current connections...");
+
+    fetch('/api/db/stats?type=currentConnections', {
+        headers: {
+            'Authorization': getToken()
+        }
+    })
+    .then(res => res.json())
+    .then(data => {
+        hideLoader();
+
+        const infoPara = document.getElementById("connectionsInfoMessage");
+        const table = document.getElementById("connectionsTable");
+
+        if (!data || !data.tableData || data.tableData.length < 2) {
+            infoPara.innerText = "No active database connections found.";
+            table.innerHTML = "";
+            return;
+        }
+
+        infoPara.innerText = "";
+        renderConnectionsTable(data.tableData);
+    })
+    .catch(err => {
+        hideLoader();
+        console.error("Error loading connections:", err);
+        document.getElementById("connectionsInfoMessage").innerText = "Failed to load connection data.";
+    });
+}
+
+function renderConnectionsTable(tableData) {
+    const table = document.getElementById("connectionsTable");
+    table.innerHTML = "";
+
+    const thead = document.createElement("thead");
+    const headerRow = document.createElement("tr");
+    tableData[0].forEach(header => {
+        const th = document.createElement("th");
+        th.textContent = header;
+        headerRow.appendChild(th);
+    });
+    thead.appendChild(headerRow);
+    table.appendChild(thead);
+
+    const tbody = document.createElement("tbody");
+    tableData.slice(1).forEach(row => {
+        const tr = document.createElement("tr");
+        row.forEach(cell => {
+            const td = document.createElement("td");
+            td.textContent = cell;
+            tr.appendChild(td);
+        });
+        tbody.appendChild(tr);
+    });
+    table.appendChild(tbody);
+}
+</script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+let serverChart, txChart, ioChart;
+
+function loadDashboardCharts() {
+    showLoader("Loading dashboard metrics...");
+
+    fetch('/api/db/monitor/dashboard', {
+        headers: {
+            'Authorization': getToken()
+        }
+    })
+    .then(res => res.json())
+    .then(data => {
+        hideLoader();
+        updateDashboardCharts(data);
+    })
+    .catch(err => {
+        hideLoader();
+        console.error("Dashboard Load Error:", err);
+    });
+}
+
+function updateDashboardCharts(data) {
+    const timestamps = data.timestamps;
+
+    if (!serverChart) {
+        const formatter = val => {
+            if (val >= 1_000_000) return (val / 1_000_000).toFixed(1) + "M";
+            if (val >= 1_000) return (val / 1_000).toFixed(1) + "K";
+            return val;
+        };
+
+        serverChart = new Chart(document.getElementById("serverSessionsChart"), {
+            type: 'line',
+            data: {
+                labels: timestamps,
+                datasets: [
+                    { label: "Active", data: data.server.active, borderColor: "red", fill: false },
+                    { label: "Idle", data: data.server.idle, borderColor: "blue", fill: false },
+                    { label: "Total", data: data.server.total, borderColor: "gray", fill: false }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { position: 'top' } },
+                scales: {
+                    y: {
+                        ticks: { callback: formatter },
+                        title: { display: true, text: "Sessions" }
+                    }
+                }
+            }
+        });
+
+        txChart = new Chart(document.getElementById("transactionsChart"), {
+            type: 'line',
+            data: {
+                labels: timestamps,
+                datasets: [
+                    { label: "Total", data: data.transactions.total, borderColor: "green", fill: false },
+                    { label: "Commit", data: data.transactions.commit, borderColor: "darkgreen", fill: false },
+                    { label: "Rollback", data: data.transactions.rollback, borderColor: "orange", fill: false }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { position: 'top' } },
+                scales: {
+                    y: {
+                        ticks: { callback: formatter },
+                        title: { display: true, text: "Transactions/sec" }
+                    }
+                }
+            }
+        });
+
+        ioChart = new Chart(document.getElementById("blockIOChart"), {
+            type: 'bar',
+            data: {
+                labels: timestamps,
+                datasets: [
+                    { label: "Read", data: data.blockIO.read, backgroundColor: "#4dabf7" },
+                    { label: "Hits", data: data.blockIO.hits, backgroundColor: "#74c0fc" }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { position: 'top' } },
+                scales: {
+                    y: {
+                        ticks: { callback: formatter },
+                        title: { display: true, text: "Block IO" }
+                    }
+                }
+            }
+        });
+
+    } else {
+        // Update chart data dynamically
+        serverChart.data.labels = timestamps;
+        serverChart.data.datasets[0].data = data.server.active;
+        serverChart.data.datasets[1].data = data.server.idle;
+        serverChart.data.datasets[2].data = data.server.total;
+        serverChart.update();
+
+        txChart.data.labels = timestamps;
+        txChart.data.datasets[0].data = data.transactions.total;
+        txChart.data.datasets[1].data = data.transactions.commit;
+        txChart.data.datasets[2].data = data.transactions.rollback;
+        txChart.update();
+
+        ioChart.data.labels = timestamps;
+        ioChart.data.datasets[0].data = data.blockIO.read;
+        ioChart.data.datasets[1].data = data.blockIO.hits;
+        ioChart.update();
+    }
+}
+</script>
 
 
 </body>
