@@ -1,6 +1,7 @@
 package com.tcs.students.utils;
 
 import io.jsonwebtoken.*;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
@@ -32,10 +33,6 @@ public class JWTUtils {
     }
 
     public boolean validateToken(String token) {
-
-        if (token == null || !token.startsWith("Bearer ")) {
-            return false;
-        }
 
         try {
             token = token.replace("Bearer ", "");
@@ -73,6 +70,15 @@ public class JWTUtils {
     public String getMFALoggedUserName(String token) {
         Jws<Claims> claimsJws = Jwts.parserBuilder()
                 .setSigningKey(JWTUtils.MFA_SECRECT_KEY)  // use the same SecretKey object used for signing
+                .build()
+                .parseClaimsJws(token);
+
+        return claimsJws.getBody().getSubject();
+    }
+
+    public String extractUsername(String token) {
+        Jws<Claims> claimsJws = Jwts.parserBuilder()
+                .setSigningKey(JWTUtils.SECRECT_KEY)  // use the same SecretKey object used for signing
                 .build()
                 .parseClaimsJws(token);
 
