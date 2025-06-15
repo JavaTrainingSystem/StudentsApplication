@@ -21,3 +21,23 @@
     removeToken();
     window.location.href = "login";
   }
+
+
+  function navigateTo(section) {
+       showLoader("Loading...");
+      window.location.href = section;
+    }
+
+
+    function logout(){
+      removeToken();
+          window.location.href = "login";
+    }
+
+
+function getSubFromJWT() {
+var token = getToken();
+    const payloadBase64 = token.split('.')[1]; // Get the payload part
+    const decodedPayload = JSON.parse(atob(payloadBase64)); // Decode from Base64
+    return decodedPayload.sub; // Return the 'sub' claim
+}

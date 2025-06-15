@@ -2,10 +2,12 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8"/>
-    <title>Student Manager</title>
+    <title>Home</title>
     <script src="js/studentmanagement.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <script src="js/studentmanagement.js"></script>
     <style>
+
     .logo,
 .company-name,
 .profile-pic {
@@ -202,10 +204,10 @@ tbody tr {
     }
 
 
-     .menu-container {
-    position: relative;
-    overflow: visible; /* allow dropdown to extend outside container */
-  }
+    .menu-container {
+      position: relative;
+      display: inline-block;
+    }
 
     .menu-btn {
       background: transparent;
@@ -213,33 +215,30 @@ tbody tr {
       font-size: 22px;
       cursor: pointer;
     }
-   .menu-dropdown {
-    display: none;
-    position: absolute;
-    right: 0;
-    top: 100%;
-    background: white;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-    border-radius: 6px;
-    overflow: visible;
-    z-index: 99999; /* bring on top of everything */
-    width: 130px;
-    transition: all 0.2s ease;
-  }
-  .menu-dropdown button {
-    display: block;
-    width: 100%;
-    border: none;
-    background: white;
-    padding: 10px 16px;
-    text-align: left;
-    cursor: pointer;
-    font-size: 14px;
-    border-bottom: 1px solid #eee;
-  }
-  .menu-dropdown button:last-child {
-    border-bottom: none;
-  }
+    .menu-dropdown {
+      display: none;
+      position: absolute;
+      right: 0;
+      top: 30px;
+      background: white;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+      border-radius: 6px;
+      overflow: hidden;
+      z-index: 1000;
+      width: 130px;
+      transition: all 0.2s ease;
+    }
+    .menu-dropdown button {
+      display: block;
+      width: 100%;
+      border: none;
+      background: white;
+      padding: 10px 16px;
+      text-align: left;
+      cursor: pointer;
+      font-size: 14px;
+      border-bottom: 1px solid #eee;
+    }
 
     .menu-dropdown button:hover {
       background: #f1f1f1;
@@ -707,8 +706,110 @@ tbody tr {
   to { opacity: 1; }
 }
 
+</style>
 
-    </style>
+
+
+
+    <style>
+  .slider-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .nav-arrow {
+    font-size: 24px;
+    background: #ccc;
+    color: white;
+    border: none;
+    padding: 10px 14px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+
+  .nav-arrow:hover {
+    background-color: #999;
+  }
+
+  .nav-arrow.hidden {
+    visibility: hidden;
+  }
+
+  .chart-box {
+    flex: 1 1 100%;
+    max-width: 720px;
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+    transition: all 0.3s ease;
+    position: relative;
+    width: 100%;
+  }
+
+  .chart-box h3 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    text-align: center;
+    color: #333;
+    font-size: 18px;
+  }
+
+  .chart-container {
+    position: relative;
+    width: 100%;
+    height: 50vh;
+    min-height: 240px;
+  }
+
+  .chart-container canvas {
+    position: absolute;
+    width: 100% !important;
+    height: 100% !important;
+    left: 0;
+    top: 0;
+  }
+
+  .chart-controls {
+    text-align: center;
+    margin-top: 12px;
+    flex-wrap: wrap;
+  }
+
+  .btn-range {
+    margin: 6px 6px;
+    padding: 6px 14px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    background-color: #e0e0e0;
+    color: #333;
+    font-weight: 500;
+    transition: background-color 0.3s, color 0.3s;
+  }
+
+  .btn-range.active {
+    background-color: #3f51b5;
+    color: white;
+  }
+
+  @media (max-width: 768px) {
+    .slider-wrapper {
+      flex-direction: column;
+    }
+    .nav-arrow {
+      display: none;
+    }
+  }
+</style>
+
+
+
 </head>
 <body>
 
@@ -716,7 +817,7 @@ tbody tr {
 <header class="main-header">
     <div class="header-left" onclick="navigateTo('home')">
         <img src="images/studentslogo.png" alt="Logo" class="logo"/>
-        <span class="company-name" onclick="navigateTo('home')">SMS</span>
+        <span class="company-name">SMS</span>
     </div>
     <div class="header-center">
         <div class="search-wrapper">
@@ -794,82 +895,56 @@ tbody tr {
 </div>
 
 
-<div class="container">
-<!--    <h2>Student Management</h2>-->
-    <div class="top-bar">
-        <div class="search-container">
-            <input type="text" placeholder="Search..." oninput="handleSearchInput(event)"/>
-            <span class="search-icon">🔍</span>
-        </div>
-        <button class="btn btn-primary" onclick="openModal()">+ Add Student</button>
-    </div>
-    <div class="table-wrapper">
-        <table>
-            <thead>
-            <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Mobile</th>
-                <th>Action</th>
-            </tr>
-            </thead>
-            <tbody id="studentTableBody"></tbody>
-        </table>
-    </div>
-</div>
+<!--<div class="container">-->
+<!--    &lt;!&ndash;    <h2>Student Management</h2>&ndash;&gt;-->
+<!--    <div class="top-bar">-->
+<!--        <div class="search-container">-->
+<!--            <input type="text" placeholder="Search..." oninput="handleSearchInput(event)"/>-->
+<!--            <span class="search-icon">🔍</span>-->
+<!--        </div>-->
+<!--        <button class="btn btn-primary" onclick="openModal()">+ Add Student</button>-->
+<!--    </div>-->
+<!--    <div class="table-wrapper">-->
+<!--        <table>-->
+<!--            <thead>-->
+<!--            <tr>-->
+<!--                <th>ID</th>-->
+<!--                <th>Name</th>-->
+<!--                <th>Mobile</th>-->
+<!--                <th>Action</th>-->
+<!--            </tr>-->
+<!--            </thead>-->
+<!--            <tbody id="studentTableBody"></tbody>-->
+<!--        </table>-->
+<!--    </div>-->
+<!--</div>-->
 
-
+<!-- Form Modal -->
 <div class="modal" id="studentModal">
-    <div class="modal-content" style="max-height: 90vh; overflow-y: auto;">
+    <div class="modal-content">
         <span class="close" onclick="closeModal('studentModal')">&times;</span>
         <h3 id="modalTitle">Add Student</h3>
         <input type="hidden" id="studentId">
-
         <label for="studentName">Name</label>
-        <input type="text" id="studentName" placeholder="Enter name" />
-
+        <input type="text" id="studentName" placeholder="Enter name"/>
         <label for="studentMobile">Mobile</label>
-        <input type="tel" id="studentMobile" name="studentMobile" placeholder="Enter mobile" maxlength="10" pattern="\d{10}" title="Enter a 10-digit mobile number" required />
-
-        <label for="studentEmail">Email</label>
-        <input type="email" id="studentEmail" placeholder="Enter email" />
-
-        <label for="studentDob">Date of Birth</label>
-        <input type="date" id="studentDob" />
-
-        <label for="studentGender">Gender</label>
-        <select id="studentGender">
-            <option value="">Select Gender</option>
-            <option value="Male">Male</option>
-            <option value="Female">Female</option>
-            <option value="Other">Other</option>
-        </select>
-
-        <label for="studentAddress">Address</label>
-        <input type="text" id="studentAddress" placeholder="Street Address" />
-
-        <label for="studentCity">City</label>
-        <input type="text" id="studentCity" placeholder="City" />
-
-        <label for="studentState">State</label>
-        <input type="text" id="studentState" placeholder="State" />
-
-        <label for="studentPincode">Pincode</label>
-        <input type="text" id="studentPincode" placeholder="Pincode" maxlength="6" />
-
-        <label for="studentCourse">Course</label>
-        <input type="text" id="studentCourse" placeholder="Course Name" />
-
-        <label for="studentEnrollDate">Enrollment Date</label>
-        <input type="date" id="studentEnrollDate" />
-
+        <input
+                type="tel"
+                id="studentMobile"
+                name="studentMobile"
+                placeholder="Enter mobile"
+                maxlength="10"
+                pattern="\d{10}"
+                title="Enter a 10-digit mobile number"
+                required
+        />
         <div class="actions">
             <button class="btn btn-primary" id="saveBtn" onclick="submitStudent()">Save</button>
-            <button class="btn btn-warning" id="updateBtn" style="display:none" onclick="updateStudent()">Update</button>
+            <button class="btn btn-warning" id="updateBtn" style="display:none" onclick="updateStudent()">Update
+            </button>
         </div>
     </div>
 </div>
-
 
 <!-- Delete Confirmation Modal -->
 <div class="modal" id="deleteModal">
@@ -884,6 +959,26 @@ tbody tr {
     </div>
 </div>
 
+
+<!-- CHARTS SECTION WITH SLIDER STYLE TOGGLE AND CONDITIONAL ARROWS -->
+<div class="container">
+    <div class="slider-wrapper">
+        <button id="leftArrow" class="nav-arrow gray hidden" onclick="switchChart('left')">←</button>
+        <div class="chart-box">
+            <h3 id="chartTitle">📈 Student Creation Over Time</h3>
+            <div class="chart-container">
+                <canvas id="mainChart"></canvas>
+            </div>
+            <div class="chart-controls" id="rangeButtons">
+                <button class="btn btn-range" data-range="1D" onclick="setChartRange('1D')">1 Day</button>
+                <button class="btn btn-range" data-range="5D" onclick="setChartRange('5D')">5 Days</button>
+                <button class="btn btn-range" data-range="1M" onclick="setChartRange('1M')">1 Month</button>
+                <button class="btn btn-range" data-range="1Y" onclick="setChartRange('1Y')">1 Year</button>
+            </div>
+        </div>
+        <button id="rightArrow" class="nav-arrow gray" onclick="switchChart('right')">→</button>
+    </div>
+</div>
 <script>
 
   let deleteId = null;
@@ -944,250 +1039,9 @@ tbody tr {
     }
   }
 
-  // ---------------------- Student Operations ----------------------
-
-  async function fetchStudents() {
-  const data = await apiRequest('GET', 'student', null, "Getting students...");
-  renderStudents(data);
-}
-
-function submitStudent() {
-  const student = collectStudentData();
-  apiRequest('POST', 'student', student, "Adding student...").then(() => {
-    closeModal('studentModal');
-    fetchStudents();
-  });
-}
-
-
-function collectStudentData() {
-  return {
-    name: document.getElementById('studentName').value,
-    mobile: document.getElementById('studentMobile').value,
-    email: document.getElementById('studentEmail').value,
-    dob: document.getElementById('studentDob').value,
-    gender: document.getElementById('studentGender').value,
-    address: document.getElementById('studentAddress').value,
-    city: document.getElementById('studentCity').value,
-    state: document.getElementById('studentState').value,
-    pincode: document.getElementById('studentPincode').value,
-    course: document.getElementById('studentCourse').value,
-    enrollDate: document.getElementById('studentEnrollDate').value
-  };
-}
-
-
-function updateStudent() {
-  const student = collectStudentData();
-  student.id = document.getElementById('studentId').value;
-  apiRequest('PUT', 'student', student, "Updating student...").then(() => {
-    closeModal('studentModal');
-    fetchStudents();
-  });
-}
-
-function confirmDelete() {
-  showLoader("Deleting...");
-
-  fetch(`${BASE_URL}student?studentId=${deleteId}`, {
-    method: 'DELETE',
-    headers: {
-      'Authorization': getToken()
-    }
-  })
-    .then(response => {
-      hideLoader();
-
-      if (response.status === 401 || response.status==403) {
-        handleUnauthorized();
-        return;
-      }
-
-      if (!response.ok) {
-        showMessage("Error", "Failed to delete student.");
-        return;
-      }
-
-      closeModal('deleteModal');
-      fetchStudents();
-    })
-    .catch(() => {
-      hideLoader();
-      closeModal('deleteModal');
-      showMessage("Error", "Unable to connect to the server. Might your internet connection be down.");
-    });
-}
-
-
-  // ---------------------- File Upload with Progress ------------------
-
-  function handleFileUpload(event, studentId) {
-    const file = event.target.files[0];
-    if (!file) return;
-
-    const formData = new FormData();
-    formData.append('file', file);
-
-    const xhr = new XMLHttpRequest();
-
-    xhr.upload.addEventListener("progress", e => {
-      if (e.lengthComputable) {
-        const percent = Math.round((e.loaded / e.total) * 100);
-        updateLoaderMessage(`Uploading... ${percent}%`);
-        updateProgress(percent);
-      }
-    });
-
-    xhr.onreadystatechange = () => {
-      if (xhr.readyState === XMLHttpRequest.OPENED) {
-        showLoader("Connecting to server...");
-      } else if (xhr.readyState === XMLHttpRequest.HEADERS_RECEIVED) {
-        updateLoaderMessage("Processing request...");
-      } else if (xhr.readyState === XMLHttpRequest.DONE) {
-        hideLoader();
-
-          if (xhr.status === 401 || response.status==403) {
-             handleUnauthorized();
-              return;
-          }
-
-        try {
-          const response = JSON.parse(xhr.responseText);
-          if (xhr.status === 200) {
-            showMessage("Info", "File uploaded successfully.");
-          } else {
-            showMessage("Error", response.message);
-          }
-        } catch {
-          showMessage("Error", "Unable to connect to the server might your internet connection is down.");
-        }
-      }
-    };
-
-    xhr.open("POST", `${BASE_URL}student/upload?studentId=${studentId}`);
-    xhr.setRequestHeader("Authorization", getToken());
-    xhr.send(formData);
-  }
-
-  // ---------------------- File Download with Progress ------------------
-
-  function downloadFile(studentId) {
-    event.stopPropagation(); // ✅ prevents row click
-    const xhr = new XMLHttpRequest();
-    xhr.responseType = 'blob';
-
-    let progressHandled = false;
-
-    xhr.addEventListener('loadstart', () => {
-      showLoader("Connecting to server...");
-    });
-
-    xhr.addEventListener('readystatechange', () => {
-      if (xhr.readyState === XMLHttpRequest.HEADERS_RECEIVED) {
-        updateLoaderMessage("Processing request...");
-      }
-    });
-
-    xhr.addEventListener('progress', e => {
-      if (e.lengthComputable) {
-        const percent = Math.round((e.loaded / e.total) * 100);
-        progressHandled = true;
-        updateLoaderMessage(`Downloading... ${percent}%`);
-        updateProgress(percent);
-      }
-    });
-
-    xhr.addEventListener('load', () => {
-      hideLoader();
-
-       if (xhr.status === 401 || response.status==403) {
-           handleUnauthorized();
-            return;
-        }
-
-      const contentType = xhr.getResponseHeader("Content-Type");
-
-      if (contentType && contentType.includes("application/json")) {
-        // It's not a file, it's an error JSON
-        const reader = new FileReader();
-        reader.onload = function () {
-          try {
-            const errorData = JSON.parse(reader.result);
-            showMessage("Error", errorData.message || "Download failed.");
-          } catch {
-            showMessage("Error", "Download failed.");
-          }
-        };
-        reader.readAsText(xhr.response);
-        return;
-      }
-
-      // Otherwise, proceed with file download
-      const disposition = xhr.getResponseHeader("Content-Disposition");
-      const filenameMatch = disposition && disposition.match(/filename="(.+)"/);
-      const filename = filenameMatch ? filenameMatch[1] : `student_${studentId}_file`;
-
-      const url = URL.createObjectURL(xhr.response);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = filename;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    });
-
-
-    xhr.addEventListener('error', () => {
-      hideLoader();
-      showMessage("Error", "Unable to connect to the server might your internet connection is down.");
-    });
-
-    xhr.open("GET", `${BASE_URL}student/download?studentId=${studentId}`);
-    xhr.setRequestHeader("Authorization", getToken());
-    xhr.send();
-
-    // Fallback: show progress bar if progress event didn’t fire
-    setTimeout(() => {
-      if (!progressHandled) {
-        updateLoaderMessage("Downloading...");
-        document.getElementById("progressBarWrapper").style.display = "none"; // Hide progress bar if no data
-      }
-    }, 1000);
-  }
-
-
   // ---------------------- UI Controls ----------------------
 
 
-
-function openModal(student = null) {
-  document.getElementById('studentModal').classList.add('show');
-  document.getElementById('modalTitle').textContent = student ? "Edit Student" : "Add Student";
-  document.getElementById('saveBtn').style.display = student ? "none" : "block";
-  document.getElementById('updateBtn').style.display = student ? "block" : "none";
-
-  document.getElementById('studentId').value = student?.id || '';
-  document.getElementById('studentName').value = student?.name || '';
-  document.getElementById('studentMobile').value = student?.mobile || '';
-  document.getElementById('studentEmail').value = student?.email || '';
-  document.getElementById('studentDob').value = student?.dob || '';
-  document.getElementById('studentGender').value = student?.gender || '';
-  document.getElementById('studentAddress').value = student?.address || '';
-  document.getElementById('studentCity').value = student?.city || '';
-  document.getElementById('studentState').value = student?.state || '';
-  document.getElementById('studentPincode').value = student?.pincode || '';
-  document.getElementById('studentCourse').value = student?.course || '';
-  document.getElementById('studentEnrollDate').value = student?.enrollDate || '';
-}
-  function closeModal(id) {
-    document.getElementById(id).classList.remove('show');
-  }
-
-  function showDelete(id) {
-    event.stopPropagation(); // ✅ prevents row click
-    deleteId = id;
-    document.getElementById('deleteModal').classList.add('show');
-  }
   function toggleMenu(event) {
     event.stopPropagation();
 
@@ -1238,11 +1092,6 @@ function openModal(student = null) {
 
 
 
-  function triggerFileInput(studentId, event) {
-    event.stopPropagation();
-    const input = document.getElementById(`fileInput-${studentId}`);
-    input.click();
-  }
 
   document.addEventListener('click', () => {
     document.querySelectorAll('.menu-dropdown').forEach(menu => menu.style.display = 'none');
@@ -1264,10 +1113,10 @@ function openModal(student = null) {
     this.value = this.value.replace(/\D/g, '');
   });
 
-  fetchStudents();
 
-
-
+  function closeModal(id) {
+    document.getElementById(id).classList.remove('show');
+  }
 
 
 
@@ -1355,16 +1204,6 @@ function openModal(student = null) {
     });
     tbody.appendChild(row);
   });
-
-
-    const overMessage = document.createElement('tr');
-    overMessage.innerHTML = `<td colspan="4" style="text-align:center; padding: 20px; color: #777;">***Page End***</td>`;
-    tbody.appendChild(overMessage);
-
-     const loadedRecords = document.createElement('tr');
-     var message = data.length == 1 ? "Loaded " + data.length + " student" : "Loaded " + data.length + " students";
-    loadedRecords.innerHTML = `<td colspan="4" style="text-align:center; padding: 20px; color: #777;">${message}</td>`;
-    tbody.appendChild(loadedRecords);
 }
 
 
@@ -1386,6 +1225,7 @@ function openModal(student = null) {
 
   // Attach click event to menu toggle button
   document.querySelector('.menu-toggle').addEventListener('click', toggleSidebar);
+
 
 </script>
 
@@ -1426,7 +1266,143 @@ document.addEventListener('keydown', function (e) {
 
 
 </script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  function toggleSidebar() {
+    document.getElementById("sidebar").classList.toggle("open");
+    document.getElementById("sidebarOverlay").classList.toggle("show");
+  }
+
+  function toggleProfileDropdown() {
+    const dropdown = document.getElementById("profileDropdown");
+    dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+  }
+
+  function toggleSearchPopup() {
+    document.getElementById("searchPopup").classList.toggle("show");
+  }
+
+  document.addEventListener('click', function(event) {
+    const isProfile = event.target.closest('.profile-dropdown-container');
+    if (!isProfile) document.getElementById("profileDropdown").style.display = "none";
+  });
+
+
+</script>
+
+
+<script>
+  let currentChart = 'creation';
+  let currentRange = '5D';
+  let mainChart = null;
+  let chartData = null;
+
+
+  async function fetchChartData(range) {
+    try {
+<!--      document.getElementById("chartTitle").innerText = "Loading...";-->
+      showLoader("Loading...")
+      const response = await fetch(`/api/v1/student/chart-data?range=${range}`, {
+        method: "GET",
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': getToken()
+        }
+      });
+
+       if(response.status==401 || response.status==403){
+        handleUnauthorized();
+        return;
+       }
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch chart data");
+      }
+
+      const data = await response.json();
+      chartData = data;
+      hideLoader();
+      renderChart();
+    } catch (error) {
+      console.error(error);
+      document.getElementById("chartTitle").innerText = "📊 Chart Load Failed";
+      hideLoader();
+    }
+  }
+
+  function renderChart() {
+    if (!chartData) return;
+
+    if (mainChart) mainChart.destroy();
+
+    const ctx = document.getElementById("mainChart").getContext("2d");
+    const dataKey = currentChart === 'creation' ? 'created' : 'deleted';
+    const type = currentChart === 'creation' ? 'line' : 'bar';
+    const color = currentChart === 'creation' ? '#3f51b5' : '#f44336';
+    const bg = currentChart === 'creation' ? 'rgba(63, 81, 181, 0.2)' : '#f44336';
+    const label = currentChart === 'creation' ? 'Created Students' : 'Deleted Students';
+
+    mainChart = new Chart(ctx, {
+      type,
+      data: {
+        labels: chartData.labels,
+        datasets: [{
+          label,
+          data: chartData[dataKey],
+          backgroundColor: bg,
+          borderColor: color,
+          fill: currentChart === 'creation',
+          tension: 0.3,
+          borderRadius: 6
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: { y: { beginAtZero: true } }
+      }
+    });
+
+    document.getElementById("chartTitle").innerText = currentChart === 'creation'
+      ? '📈 Student Creation Over Time'
+      : '📉 Student Deletion Over Time';
+
+    highlightActive("rangeButtons", currentRange);
+    updateArrows();
+  }
+
+  function switchChart(direction) {
+    currentChart = direction === 'left' ? 'creation' : 'deletion';
+    renderChart();
+  }
+
+  function setChartRange(range) {
+    currentRange = range;
+    fetchChartData(currentRange);
+  }
+
+  function highlightActive(containerId, range) {
+    const buttons = document.getElementById(containerId).children;
+    for (let btn of buttons) {
+      btn.classList.toggle('active', btn.getAttribute('data-range') === range);
+    }
+  }
+
+  function updateArrows() {
+    document.getElementById("leftArrow").classList.toggle("hidden", currentChart === 'creation');
+    document.getElementById("rightArrow").classList.toggle("hidden", currentChart === 'deletion');
+  }
+
+  window.addEventListener('DOMContentLoaded', () => {
+    fetchChartData(currentRange);
+  });
+</script>
+
 <script src="js/search.js"></script>
+
 </body>
 </html>
 

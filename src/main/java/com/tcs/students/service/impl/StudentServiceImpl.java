@@ -7,6 +7,7 @@ import com.tcs.students.dto.Student;
 import com.tcs.students.entity.StudentEntity;
 import com.tcs.students.service.FileService;
 import com.tcs.students.service.StudentService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.io.InputStreamResource;
@@ -34,8 +35,8 @@ public class StudentServiceImpl implements StudentService {
     public Student saveStudent(Student student) {
 
         StudentEntity studentEntity = new StudentEntity();
-        studentEntity.setMobile(student.getMobile());
-        studentEntity.setName(student.getName());
+
+        BeanUtils.copyProperties(student, studentEntity);
 
         studentRepo.save(studentEntity);
 
@@ -52,9 +53,7 @@ public class StudentServiceImpl implements StudentService {
 
         studentEntities.forEach(studentEntity -> {
             Student student = new Student();
-            student.setId(studentEntity.getId());
-            student.setName(studentEntity.getName());
-            student.setMobile(studentEntity.getMobile());
+            BeanUtils.copyProperties(studentEntity, student);
             students.add(student);
         });
 
@@ -71,8 +70,7 @@ public class StudentServiceImpl implements StudentService {
         Optional<StudentEntity> studentEntity = studentRepo.findById(student.getId());
 
         if (studentEntity.isPresent()) {
-            studentEntity.get().setName(student.getName());
-            studentEntity.get().setMobile(student.getMobile());
+            BeanUtils.copyProperties(student, studentEntity.get());
             studentRepo.save(studentEntity.get());
         }
 

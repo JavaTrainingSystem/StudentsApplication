@@ -288,7 +288,7 @@
           document.getElementById("otpForm").style.display = "block";
         } else {
           setTokenDetails(result.token);
-          window.location.href = "students";
+          window.location.href = "home";
         }
       } else {
         showModal(result.message || "Invalid username or password.");
@@ -320,7 +320,7 @@
 
       if (result.status === "SUCCESS") {
         setTokenDetails(result.token);
-        window.location.href = "students";
+        window.location.href = "home";
       } else {
         showModal(result.message || "Invalid OTP.");
       }
@@ -328,6 +328,16 @@
       hideLoader();
       showModal("Could not verify OTP. Please try again.");
     }
+  }
+
+  init();
+
+  function init(){
+        var token = getToken();
+
+        if(token!=undefined && token!=null){
+            navigateTo("home");
+        }
   }
 </script>
 
