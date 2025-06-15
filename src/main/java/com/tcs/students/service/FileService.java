@@ -9,6 +9,8 @@ public interface FileService {
 
     String uploadFile(MultipartFile file);
 
+    String uploadFile(String folderPath, String fileName, MultipartFile file);
+
     InputStream downloadFile(String filePath) throws FileNotFoundException;
 
     void deleteFile(String certFilePath);

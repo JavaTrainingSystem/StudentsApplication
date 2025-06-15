@@ -2,7 +2,6 @@ package com.tcs.students.controllers;
 
 import com.tcs.students.constants.CommonConstants;
 import com.tcs.students.dto.APIResponse;
-import com.tcs.students.dto.TokenResponse;
 import com.tcs.students.service.LoginService;
 import com.tcs.students.utils.JWTUtils;
 import org.springframework.http.HttpStatus;
@@ -43,7 +42,7 @@ public class LoginController {
 //    }
 
     @PostMapping("/login")
-    public ResponseEntity<TokenResponse> login(@RequestBody Map<String, String> payload) {
+    public ResponseEntity<APIResponse> login(@RequestBody Map<String, String> payload) {
         String userName = payload.get("userName");
         String encodedPassword = payload.get("password");
         String password = new String(Base64.getDecoder().decode(encodedPassword));
@@ -51,11 +50,9 @@ public class LoginController {
                 new UsernamePasswordAuthenticationToken(userName, password)
         );
 
-        String token = jwtUtils.createToken(userName);
-        TokenResponse tokenResponse = new TokenResponse(CommonConstants.SUCCESS, 200, "Loggedin Successfulyy", token);
+        APIResponse apiResponse = loginService.generateToken(userName);
 
-        tokenResponse.setMFAEnabled(false);
-        return ResponseEntity.ok(tokenResponse);
+        return ResponseEntity.ok(apiResponse);
     }
 
     @PostMapping("verify-otp")

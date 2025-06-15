@@ -1,5 +1,6 @@
 package com.tcs.students.utils;
 
+import com.tcs.students.exceptions.handlers.UnAuthorizedException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
@@ -27,6 +28,13 @@ public class CommonUtils {
 
     public HttpServletRequest getCurrentRequest() {
         return ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+    }
+
+    public void isAdmin() {
+        String currentLoggedInUserName = getCurrentLoggedInUserName();
+
+        if (!"admin".equalsIgnoreCase(currentLoggedInUserName))
+            throw new UnAuthorizedException("UnAuthorized Access");
     }
 
 }

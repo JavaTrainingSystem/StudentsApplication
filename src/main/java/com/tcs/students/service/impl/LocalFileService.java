@@ -34,6 +34,24 @@ public class LocalFileService implements FileService {
     }
 
     @Override
+    public String uploadFile(String folderPath, String fileName, MultipartFile multipartFile) {
+        File localServerDir = new File(localFilePath + folderPath);
+        if (!localServerDir.exists()) {
+            localServerDir.mkdirs();
+        }
+
+        File file = new File(localFilePath + folderPath, fileName);
+
+        try (FileOutputStream fileOutputStream = new FileOutputStream(file)) {
+            fileOutputStream.write(multipartFile.getBytes());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return file.getAbsolutePath();
+    }
+
+    @Override
     public InputStream downloadFile(String filePath) throws FileNotFoundException {
         return new FileInputStream(filePath);
     }

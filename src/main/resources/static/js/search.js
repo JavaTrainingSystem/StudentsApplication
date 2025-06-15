@@ -1,9 +1,9 @@
         const commands = [
       { icon: "🏠", label: "Home", action: () => navigateTo("home") },
       { icon: "🕵️", label: "Audit", action: () => navigateTo("audit")  },
-      { icon: "⚙️", label: "Settings", action: () => navigateTo("home") },
-      { icon: "🔒", label: "Change Password", action: () =>navigateTo("home")  },
-      { icon: "👥", label: "Manage Users", action: () => navigateTo("home")  },
+      { icon: "⚙️", label: "Settings", action: () => navigateTo("settings") },
+      { icon: "🔒", label: "Change Password", action: () =>navigateTo("settings")  },
+      { icon: "👥", label: "Manage Users", action: () => navigateTo("settings")  },
         { icon: "🎓", label: "Students", action: () => navigateTo("students")  }
     ];
 

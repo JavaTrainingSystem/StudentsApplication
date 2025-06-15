@@ -96,7 +96,7 @@ public class StudentController {
             case "1D":
                 response.put("labels", List.of("Jun 14"));
                 response.put("created", List.of(5));
-                response.put("deleted", List.of(0));
+                response.put("deleted", List.of(2));
                 break;
 
             case "5D":
@@ -113,8 +113,8 @@ public class StudentController {
 
             case "1Y":
                 response.put("labels", List.of("Jul 2023", "Aug 2023", "Sep 2023", "Oct 2023", "Nov 2023", "Dec 2023", "Jan 2024", "Feb 2024", "Mar 2024", "Apr 2024", "May 2024", "Jun 2024"));
-                response.put("created", List.of(12, 18, 22, 30, 24, 20, 25, 28, 35, 40, 38, 45));
-                response.put("deleted", List.of(3, 5, 2, 6, 4, 7, 5, 4, 6, 5, 8, 6));
+                response.put("created", List.of(12, 18, 22, 30, 24, 20, 254545, 28, 35, 40, 38, 500));
+                response.put("deleted", List.of(3, 5, 2, 6, 4, 7, 5, 224478, 6, 5, 298, 6));
                 break;
 
             default:

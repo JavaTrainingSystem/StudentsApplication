@@ -288,6 +288,7 @@
           document.getElementById("otpForm").style.display = "block";
         } else {
           setTokenDetails(result.token);
+          setProfilePhoto(result.profilePhoto);
           window.location.href = "home";
         }
       } else {
@@ -320,6 +321,7 @@
 
       if (result.status === "SUCCESS") {
         setTokenDetails(result.token);
+        setProfilePhoto(result.profilePhoto);
         window.location.href = "home";
       } else {
         showModal(result.message || "Invalid OTP.");

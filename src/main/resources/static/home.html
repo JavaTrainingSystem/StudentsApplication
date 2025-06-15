@@ -828,9 +828,9 @@ tbody tr {
     <div class="header-right">
         <button class="menu-toggle">☰</button>
         <div class="profile-dropdown-container">
-            <img src="images/147.jpg" alt="Profile" class="profile-pic" onclick="toggleProfileDropdown()" />
+            <img id="profilePhotoId" src="images/default-profile.jpg" alt="Profile" class="profile-pic" onclick="toggleProfileDropdown()" />
             <div id="profileDropdown" class="profile-dropdown">
-                <button onclick="goToSettings()">⚙️ Settings</button>
+                <button onclick="navigateTo('settings')">⚙️ Settings</button>
                 <button onclick="logout()">🚪 Logout</button>
             </div>
         </div>
@@ -1399,6 +1399,13 @@ document.addEventListener('keydown', function (e) {
   window.addEventListener('DOMContentLoaded', () => {
     fetchChartData(currentRange);
   });
+
+  init();
+
+  function init(){
+        loadProfilePhotoFromCache();
+  }
+
 </script>
 
 <script src="js/search.js"></script>
