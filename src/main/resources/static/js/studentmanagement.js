@@ -1,7 +1,12 @@
-  const currentUrl = new URL(window.location.href);
-  const currentPort = currentUrl.port ? `:${currentUrl.port}` : '';
-  const currentContextPath = '';
-  const BASE_URL = `${currentUrl.protocol}//${currentUrl.hostname}${currentPort}${currentContextPath ? '/' + currentContextPath + '/' : '/' + 'api/v1/'}`;
+let currentUrlUUU = new URL(window.location.href);
+const currentPort = currentUrlUUU.port ? `:${currentUrlUUU.port}` : '';
+const currentContextPath = ''; // or 'myapp', if needed
+
+// Determine base path depending on whether currentContextPath is set
+const basePath = currentContextPath ? `${currentContextPath}/` : 'api/v1/';
+
+const BASE_URL = `${currentUrlUUU.protocol}//${currentUrlUUU.hostname}${currentPort}/${basePath}`;
+
 
   const tokenVar = "accessToken";
   const profilePhotoVar = "profilePhoto";
@@ -28,7 +33,7 @@
 
   function handleUnauthorized() {
     removeToken();
-    window.location.href = "login";
+    window.location.href = "login?sts=WW91ciBzZXNzaW9uIGhhcyBleHBpcmVkLiBQbGVhc2UgbG9nIGluIGFnYWluIHRvIGNvbnRpbnVlLg==";
   }
 
 
@@ -59,3 +64,24 @@ const imgElement = document.getElementById("profilePhotoId");
 // Set the src attribute to the Base64 string
 imgElement.src = "data:image/png;base64," + profilePic;
 }
+
+
+setInterval(pollCheckTokenExpiry, 5000);
+
+function pollCheckTokenExpiry() {
+    var token = getToken();
+
+    if(token==null || token==undefined)
+        return;
+
+    const payloadBase64 = token.split('.')[1]; // Get the payload part
+    const decodedPayload = JSON.parse(atob(payloadBase64)); // Decode from Base64
+
+    const now = Math.floor(Date.now() / 1000); // current time in seconds
+    const isExpired = decodedPayload.exp < now;
+
+    if(isExpired){
+        handleUnauthorized();
+    }
+}
+

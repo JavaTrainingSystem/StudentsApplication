@@ -1677,6 +1677,7 @@ function loadProfilePic() {
     showMessage("Error", "Unable to load profile picture.");
   });
 }
+let intervalId;
 
  init();
 
@@ -1684,11 +1685,27 @@ function loadProfilePic() {
 loadProfilePic();
 loadProfilePhotoFromCache();
 
-if(adminFlag)
+if(adminFlag){
 renderUsers();
+ intervalId = setInterval(pollDashboardCall, 5000);
+}
   }
 
 
+function pollDashboardCall(){
+fetch('/api/db/monitor/dashboard', {
+        headers: {
+            'Authorization': getToken()
+        }
+    })
+    .then(res => res.json())
+    .then(data => {
+        updateDashboardCharts(data);
+    })
+    .catch(err => {
+        console.error("Dashboard Load Error:", err);
+    });
+}
 </script>
 
 

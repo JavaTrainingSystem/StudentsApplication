@@ -340,6 +340,21 @@
         if(token!=undefined && token!=null){
             navigateTo("home");
         }
+
+
+         const params = new URLSearchParams(window.location.search);
+            const encodedMessage = params.get('sts');
+
+            if (!encodedMessage) return;
+
+try {
+    const decodedMessage = atob(encodedMessage);
+  showModal(decodedMessage);
+  } catch (error) {
+    console.error('Failed to decode Base64:', error);
+    return null;
+  }
+
   }
 </script>
 
