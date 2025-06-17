@@ -24,4 +24,6 @@ public interface StudentService {
     Map<String, Object> downloadStudentDoc(Integer studentId) throws IOException;
 
     List<Student> searchStudents(String name, Integer pageNo, Integer pageSize);
+
+    String getChartData(String dbRange);
 }

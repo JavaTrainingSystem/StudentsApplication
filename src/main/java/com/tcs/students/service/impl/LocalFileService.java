@@ -11,9 +11,18 @@ import java.io.*;
 public class LocalFileService implements FileService {
 
 
-    @Value("${local.file.path}")
     private String localFilePath;
 
+    @Value("${local.file.path}")
+    public void setLocalFilePath(String localFilePath) {
+        if (localFilePath.endsWith(File.separator)) {
+            this.localFilePath = localFilePath + "appDocs" + File.separator;
+        } else {
+            this.localFilePath = localFilePath + File.separator + "appDocs" + File.separator;
+        }
+
+        new File(this.localFilePath).mkdirs();
+    }
 
     @Override
     public String uploadFile(MultipartFile multipartFile) {

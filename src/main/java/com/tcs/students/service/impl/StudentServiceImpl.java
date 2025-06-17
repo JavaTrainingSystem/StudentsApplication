@@ -148,5 +148,10 @@ public class StudentServiceImpl implements StudentService {
         return students;
     }
 
+    @Override
+    public String getChartData(String dbRange) {
+        return studentRepo.getAuditChartData(dbRange).getJsonResult();
+    }
+
 
 }

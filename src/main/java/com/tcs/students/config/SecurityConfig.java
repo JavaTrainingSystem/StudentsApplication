@@ -33,7 +33,7 @@ public class SecurityConfig {
                         "/api/v1/login",
                         "/api/v1/verify-otp"
                 ).permitAll()
-                .requestMatchers("/api/v1/**").authenticated()
+                .requestMatchers("/api/**").authenticated()
                 .anyRequest().permitAll() // everything else is public
                 .and()
                 .authenticationProvider(authenticationProvider)

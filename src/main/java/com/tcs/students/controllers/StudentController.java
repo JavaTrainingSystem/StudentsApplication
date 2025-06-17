@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -89,40 +88,25 @@ public class StudentController {
     }
 
     @GetMapping("/chart-data")
-    public Map<String, Object> getChartData(@RequestParam String range) {
-        Map<String, Object> response = new HashMap<>();
-
+    public String getChartData(@RequestParam String range) {
+        String dbRange = "";
         switch (range.toUpperCase()) {
             case "1D":
-                response.put("labels", List.of("Jun 14"));
-                response.put("created", List.of(5));
-                response.put("deleted", List.of(2));
+                dbRange = "1 day";
                 break;
-
             case "5D":
-                response.put("labels", List.of("Jun 10", "Jun 11", "Jun 12", "Jun 13", "Jun 14"));
-                response.put("created", List.of(4, 7, 5, 8, 6));
-                response.put("deleted", List.of(1, 2, 1, 3, 0));
+                dbRange = "5 days";
                 break;
-
             case "1M":
-                response.put("labels", List.of("May 20", "May 25", "May 30", "Jun 5", "Jun 10"));
-                response.put("created", List.of(3, 6, 4, 9, 7));
-                response.put("deleted", List.of(0, 1, 2, 1, 3));
+                dbRange = "1 month";
                 break;
-
             case "1Y":
-                response.put("labels", List.of("Jul 2023", "Aug 2023", "Sep 2023", "Oct 2023", "Nov 2023", "Dec 2023", "Jan 2024", "Feb 2024", "Mar 2024", "Apr 2024", "May 2024", "Jun 2024"));
-                response.put("created", List.of(12, 18, 22, 30, 24, 20, 254545, 28, 35, 40, 38, 500));
-                response.put("deleted", List.of(3, 5, 2, 6, 4, 7, 5, 224478, 6, 5, 298, 6));
+                dbRange = "1 year";
                 break;
-
             default:
-                response.put("labels", List.of());
-                response.put("created", List.of());
-                response.put("deleted", List.of());
+                dbRange = "1 day";
         }
 
-        return response;
+        return service.getChartData(dbRange);
     }
 }

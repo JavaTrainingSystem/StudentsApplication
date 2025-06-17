@@ -933,6 +933,101 @@ tbody tr {
 }
 
     </style>
+
+
+    <style>
+        #tab3 ul {
+            padding-left: 0;
+            margin: 0;
+        }
+
+        #tab3 ul li {
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+            font-size: 14px;
+            color: #2c3e50;
+        }
+
+        #tab3 h3 {
+            text-align: center;
+            color: #2c3e50;
+            margin-top: 0;
+            margin-bottom: 12px;
+        }
+
+        #tab3 canvas {
+            width: 100% !important;
+            max-width: 500px;
+            margin: 0 auto;
+            display: block;
+        }
+
+        @media (max-width: 600px) {
+            #tab3 canvas {
+                max-width: 100%;
+            }
+
+            #tab3 table th, #tab3 table td {
+                font-size: 13px;
+                padding: 8px;
+            }
+
+            #tab3 ul li {
+                font-size: 13px;
+            }
+        }
+    </style>
+
+
+    <style>
+        #folder-viewer {
+            position: fixed;
+            top: 10%;
+            left: 10%;
+            width: 80%;
+            max-height: 80%;
+            background: white;
+            border: 1px solid #ccc;
+            padding: 20px;
+            overflow: auto;
+            z-index: 9999;
+            box-shadow: 0 0 15px rgba(0,0,0,0.3);
+        }
+        #folder-viewer ul {
+            list-style: none;
+        }
+        #folder-viewer li {
+            margin: 4px 0;
+            cursor: pointer;
+        }
+    </style>
+
+
+
+    <style>
+        #folder-viewer {
+            position: fixed;
+            top: 10%;
+            left: 10%;
+            width: 80%;
+            max-height: 80%;
+            overflow-y: auto;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 0 25px rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            z-index: 10000;
+        }
+        .folder-tree {
+            list-style: none;
+            padding-left: 0;
+        }
+        .folder-tree li {
+            font-family: 'Segoe UI', sans-serif;
+        }
+    </style>
+
+
 </head>
 <body>
 
@@ -1097,9 +1192,42 @@ tbody tr {
         </div>
 
     </div>
+    <!-- Your existing HTML -->
     <div class="tab-content" id="tab3">
-        <div class="table-wrapper">Development in progress</div>
+
+
+        <div class="table-wrapper">
+            <h3 style="text-align:center; margin-top: 0;">📁 Folder Usage Summary</h3>
+            <table id="folderTable" style="width:100%; border-collapse:collapse; border: 1px solid #ccc;">
+                <thead>
+                <tr style="background:#fafafa;">
+                    <th style="padding: 10px; border: 1px solid #ddd;">Folder</th>
+                    <th style="border: 1px solid #ddd;">Size</th>
+                    <th style="border: 1px solid #ddd;">Files</th>
+                    <th style="border: 1px solid #ddd;">Subfolders</th>
+                    <th style="border: 1px solid #ddd;">Last Modified</th>
+                    <th style="border: 1px solid #ddd;">View / Download</th>
+                </tr>
+                </thead>
+                <tbody>
+                <!-- Populated dynamically -->
+                </tbody>
+            </table>
+        </div>
+
+
+        <div class="table-wrapper" style="margin-top: 30px;">
+            <h3 style="text-align:center;">📊 Top Storage Consumers</h3>
+            <canvas id="storageChart" height="150"></canvas> <!-- JS uses this -->
+        </div>
+
+        <div class="table-wrapper" style="margin-top: 30px;">
+            <h3 style="text-align:center;">📥 Recent Uploads</h3>
+            <ul id="recentUploads" style="list-style:none; padding:0; font-size: 14px;"></ul>
+        </div>
     </div>
+
+
     <div class="tab-content" id="tab4">
         <div class="tabs" style="justify-content: flex-start;">
             <div class="tab sub-tab active" onclick="switchSubTab('appStorage')">App Storage</div>
@@ -2128,6 +2256,210 @@ function updateDashboardCharts(data) {
     }
 }
 </script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        fetch("/api/storage/stats", {
+            headers: {
+                "Authorization": getToken()
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                window.basePath = data.basePath; // store globally if needed
+                populateFolderTable(data.folderSummary);
+                populateChart(data.topConsumers);
+                populateRecentUploads(data.recentUploads);
+            })
+            .catch(error => console.error("Error loading storage stats:", error));
+
+        function populateFolderTable(folders) {
+            const tableBody = document.querySelector("#tab3 table tbody");
+            tableBody.innerHTML = "";
+
+            folders.forEach(folder => {
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                <td>${folder.relativePath}</td>
+                <td>${folder.size} MB</td>
+                <td>${folder.files}</td>
+                <td>${folder.subfolders}</td>
+                <td>${folder.lastModified}</td>
+                <td>
+                    <button class="btn btn-warning" onclick="viewFolder('${folder.encodedPath}')">View</button>
+                    <button class="btn btn-primary" onclick="downloadFolder('${folder.encodedPath}')">Download</button>
+                </td>
+            `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        function populateChart(topConsumers) {
+            const ctx = document.getElementById('storageChart').getContext('2d');
+            const labels = topConsumers.map(f => f.relativePath);
+            const sizes = topConsumers.map(f => f.size);
+
+            if (window.storageChart && typeof window.storageChart.destroy === "function") {
+                window.storageChart.destroy();
+            }
+
+            window.storageChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'MB Used',
+                        data: sizes,
+                        backgroundColor: ['#9b59b6', '#3498db', '#2ecc71', '#e67e22', '#1abc9c'],
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    animation: { duration: 800 },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: ctx => `${ctx.parsed.y} MB`
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: { display: true, text: 'MB Used' }
+                        },
+                        x: {
+                            title: { display: true, text: 'Folders' }
+                        }
+                    }
+                }
+            });
+        }
+
+        function populateRecentUploads(recent) {
+            const uploadList = document.querySelector("#tab3 ul");
+            uploadList.innerHTML = "";
+
+            recent.forEach(file => {
+                const li = document.createElement("li");
+                li.innerHTML = `
+                <strong>${file.name}</strong> — ${file.size} KB — Uploaded on ${file.modified}`;
+                uploadList.appendChild(li);
+            });
+        }
+
+        window.viewFolder = function(encodedPath) {
+            const decodedPath = atob(encodedPath);
+
+            // Remove existing viewer if present
+            const existing = document.getElementById("folder-viewer");
+            if (existing) existing.remove();
+
+            // Create popup container
+            const container = document.createElement("div");
+            container.id = "folder-viewer";
+            container.innerHTML = `
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h3 style="margin: 0;">📁 ${decodedPath}</h3>
+            <button onclick="document.getElementById('folder-viewer').remove()" style="background-color: #f44336; color: white; border: none; padding: 5px 10px; border-radius: 4px;">Close</button>
+        </div>
+        <ul class="folder-tree"></ul>
+    `;
+            document.body.appendChild(container);
+
+            // Load initial folder content
+            loadFolder(decodedPath, container.querySelector(".folder-tree"));
+        };
+
+
+        // window.downloadFolder = function(encodedPath) {
+        //     const decodedPath = atob(encodedPath);
+        //     const url = `/api/storage/download-folder?encodedPath=${btoa(decodedPath)}`;
+        //     window.location.href = url;
+        // };
+        window.downloadFolder = function(encodedPath) {
+            const decodedPath = atob(encodedPath);
+            const token = localStorage.getItem("token");
+
+            fetch(`/api/storage/download-folder?encodedPath=${btoa(decodedPath)}`, {
+                method: "GET",
+                headers: {
+                    "Authorization": getToken()
+                }
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error("Download failed");
+                    }
+                    return response.blob();
+                })
+                .then(blob => {
+                    const downloadUrl = window.URL.createObjectURL(blob);
+                    const a = document.createElement("a");
+                    a.href = downloadUrl;
+                    a.download = decodedPath.split(/[/\\]/).pop() + ".zip"; // Extract folder name
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                    window.URL.revokeObjectURL(downloadUrl);
+                })
+                .catch(err => {
+                    console.error("Download error:", err);
+                    alert("Failed to download folder.");
+                });
+        };
+
+
+
+
+
+
+    });
+
+
+
+    function loadFolder(path, targetUl) {
+        fetch(`/api/storage/view-folder?encodedPath=${btoa(path)}`, {
+            headers: {
+                "Authorization": getToken()
+            }
+        })
+                .then(res => res.json())
+            .then(data => {
+                data.forEach(entry => {
+                    const li = document.createElement("li");
+                    li.style.margin = "4px 0";
+
+                    if (entry.isDirectory) {
+                        li.innerHTML = `
+                        <span style="cursor:pointer;">▶️ <strong>${entry.name}</strong></span>
+                        <ul style="display:none; margin-left: 20px;"></ul>
+                    `;
+                        const span = li.querySelector("span");
+                        const nestedUl = li.querySelector("ul");
+
+                        span.onclick = function () {
+                            if (nestedUl.style.display === "none") {
+                                loadFolder(atob(entry.path), nestedUl);
+                                nestedUl.style.display = "block";
+                                span.textContent = `🔽 ${entry.name}`;
+                            } else {
+                                nestedUl.style.display = "none";
+                                span.textContent = `▶️ ${entry.name}`;
+                            }
+                        };
+                    } else {
+                        li.innerHTML = `📄 ${entry.name}`;
+                    }
+
+                    targetUl.appendChild(li);
+                });
+            });
+    }
+</script>
+
 
 
 </body>
