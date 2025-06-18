@@ -19,4 +19,6 @@ public class UserDTO {
 
     private String isAdmin;
 
+    private String mobile;
+
 }

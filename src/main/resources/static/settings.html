@@ -1026,6 +1026,52 @@ tbody tr {
             font-family: 'Segoe UI', sans-serif;
         }
     </style>
+    <style>
+/* Toggle Switch */
+.toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 24px;
+  margin-right: 10px;
+}
+
+.toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggle-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0; left: 0;
+  right: 0; bottom: 0;
+  background-color: #ccc;
+  transition: .4s;
+  border-radius: 34px;
+}
+
+.toggle-slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: .4s;
+  border-radius: 50%;
+}
+
+.toggle-switch input:checked + .toggle-slider {
+  background-color: #4CAF50;
+}
+
+.toggle-switch input:checked + .toggle-slider:before {
+  transform: translateX(26px);
+}
+</style>
 
 
 </head>
@@ -1181,14 +1227,22 @@ tbody tr {
                 <input type="password" id="popupPassword" placeholder="Password" />
                 <input type="email" id="popupEmail" placeholder="Email" />
                 <input type="text" id="popupMobile" placeholder="Mobile Number" />
-                <label style="margin-top: 10px; display: block;">
-                    <input type="checkbox" id="popupMFA" />
-                    Enable MFA
-                </label>
-                <label style="margin-top: 10px; display: block;">
-                    <input type="checkbox" id="popupIsAdmin" />
-                    Is Admin
-                </label>
+                <div style="display: flex; align-items: center; margin-top: 10px;">
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="popupMFA" />
+                        <span class="toggle-slider"></span>
+                    </label>
+                    <span>Enable MFA</span>
+                </div>
+
+                <div style="display: flex; align-items: center; margin-top: 10px;">
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="popupIsAdmin" />
+                        <span class="toggle-slider"></span>
+                    </label>
+                    <span>Is Admin</span>
+                </div>
+
                 <div class="actions" style="justify-content: center;">
                     <button class="btn btn-primary" onclick="saveUserPopup()">Save</button>
                 </div>

@@ -32,6 +32,9 @@ public class UserEntity {
     @Column(name = "is_admin")
     private String isAdmin;
 
+    @Column(name = "mobile")
+    private String mobile;
+
     public Integer getUserId() {
         return userId;
     }
@@ -86,5 +89,13 @@ public class UserEntity {
 
     public void setIsAdmin(String isAdmin) {
         this.isAdmin = isAdmin;
+    }
+
+    public String getMobile() {
+        return mobile;
+    }
+
+    public void setMobile(String mobile) {
+        this.mobile = mobile;
     }
 }
