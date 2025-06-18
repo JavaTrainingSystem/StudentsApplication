@@ -38,8 +38,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDTO saveUser(UserDTO user) {
 
-        commonUtils.isAdmin();
-
         UserEntity userEntity = new UserEntity();
 
         BeanUtils.copyProperties(user, userEntity);
@@ -53,8 +51,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<UserDTO> getUsers() {
-
-        commonUtils.isAdmin();
 
         List<UserDTO> userResponse = new ArrayList<>();
 
@@ -73,8 +69,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteUser(Integer userId) {
 
-        commonUtils.isAdmin();
-
         Optional<UserEntity> userEntity = userRepo.findById(userId);
 
         if (userEntity.isPresent()) {
@@ -87,8 +81,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDTO updateUser(UserDTO userDTO) {
-
-        commonUtils.isAdmin();
 
         Optional<UserEntity> userEntity = userRepo.findById(userDTO.getUserId());
 

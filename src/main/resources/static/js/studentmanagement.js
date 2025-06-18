@@ -49,11 +49,11 @@ const BASE_URL = `${currentUrlUUU.protocol}//${currentUrlUUU.hostname}${currentP
     }
 
 
-function getSubFromJWT() {
+function isAdminUser() {
 var token = getToken();
     const payloadBase64 = token.split('.')[1]; // Get the payload part
     const decodedPayload = JSON.parse(atob(payloadBase64)); // Decode from Base64
-    return decodedPayload.sub; // Return the 'sub' claim
+    return decodedPayload.IS_ADMIN; // Return the 'sub' claim
 }
 
 

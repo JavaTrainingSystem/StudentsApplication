@@ -1144,7 +1144,7 @@ tbody tr {
 
 <div class="tab-wrapper">
     <div class="tabs">
-        <div class="tab" data-role="user-audit" onclick="switchTab('tab1')">🕵️‍♂️ User Audit</div>
+        <div class="tab" data-role="admin" onclick="switchTab('tab1')">🕵️‍♂️ User Audit</div>
         <div class="tab" data-role="student-audit" onclick="switchTab('tab2')">🎓 Student Audit</div>
     </div>
 
@@ -1370,6 +1370,7 @@ function switchTab(tabId) {
 }
 
 
+
  window.onload = function () {
     const allTabs = document.querySelectorAll('.tab');
     const allContents = document.querySelectorAll('.tab-content');
@@ -1400,12 +1401,11 @@ function switchTab(tabId) {
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
-
+var adminFlag = false;
 init();
 
 function init(){
-var adminFlag = false;
-if(getSubFromJWT()=="admin"){
+if(isAdminUser()=="Y"){
     adminFlag = true;
 }
 

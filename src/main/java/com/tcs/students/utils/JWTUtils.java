@@ -1,7 +1,7 @@
 package com.tcs.students.utils;
 
+import com.tcs.students.constants.CommonConstants;
 import io.jsonwebtoken.*;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
@@ -24,11 +24,12 @@ public class JWTUtils {
     private final long expireMFAAfterMillis = 5 * 60 * 1000;
 
 
-    public String createToken(String userName) {
+    public String createToken(String userName, String isAdmin) {
         return Jwts.builder().setSubject(userName)
                 .setIssuer("student-management")
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expireAfterMillis))
+                .claim(CommonConstants.IS_ADMIN, isAdmin)
                 .signWith(SECRECT_KEY, SignatureAlgorithm.HS512).compact();
     }
 
@@ -47,11 +48,12 @@ public class JWTUtils {
         return true;
     }
 
-    public String createMFAToken(String userName) {
+    public String createMFAToken(String userName, String isAdmin) {
         return Jwts.builder().setSubject(userName)
                 .setIssuer("student-management")
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expireMFAAfterMillis))
+                .claim(CommonConstants.IS_ADMIN, isAdmin)
                 .signWith(MFA_SECRECT_KEY, SignatureAlgorithm.HS512).compact();
     }
 

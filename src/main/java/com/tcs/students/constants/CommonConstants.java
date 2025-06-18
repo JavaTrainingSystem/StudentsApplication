@@ -11,4 +11,6 @@ public class CommonConstants {
 
     public static final String YES = "Y";
 
+    public static final String IS_ADMIN = "IS_ADMIN";
+
 }

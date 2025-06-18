@@ -29,6 +29,9 @@ public class UserEntity {
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
     private List<OTPEntity> otps;
 
+    @Column(name = "is_admin")
+    private String isAdmin;
+
     public Integer getUserId() {
         return userId;
     }
@@ -75,5 +78,13 @@ public class UserEntity {
 
     public void setOtps(List<OTPEntity> otps) {
         this.otps = otps;
+    }
+
+    public String getIsAdmin() {
+        return isAdmin;
+    }
+
+    public void setIsAdmin(String isAdmin) {
+        this.isAdmin = isAdmin;
     }
 }

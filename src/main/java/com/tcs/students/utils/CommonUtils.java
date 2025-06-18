@@ -1,5 +1,6 @@
 package com.tcs.students.utils;
 
+import com.tcs.students.constants.CommonConstants;
 import com.tcs.students.dao.UserRepo;
 import com.tcs.students.entity.UserEntity;
 import com.tcs.students.exceptions.handlers.UnAuthorizedException;
@@ -42,10 +43,23 @@ public class CommonUtils {
     }
 
     public void isAdmin() {
-        String currentLoggedInUserName = getCurrentLoggedInUserName();
+        String authorization = getCurrentRequest().getHeader("Authorization");
+        if (authorization.contains("Bearer ")) {
+            authorization = authorization.replace("Bearer ", "").trim();
+        }
 
-        if (!"admin".equalsIgnoreCase(currentLoggedInUserName))
+        Jws<Claims> claimsJws = Jwts.parserBuilder()
+                .setSigningKey(JWTUtils.SECRECT_KEY)  // use the same SecretKey object used for signing
+                .build()
+                .parseClaimsJws(authorization);
+
+
+        String isAdmin = (String) claimsJws.getBody().get(CommonConstants.IS_ADMIN);
+
+        if (!CommonConstants.YES.equals(isAdmin)) {
             throw new UnAuthorizedException("UnAuthorized Access");
+        }
+
     }
 
 }

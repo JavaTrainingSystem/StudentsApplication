@@ -26,7 +26,6 @@ public class StorageStats {
     @Value("${local.file.path}")
     private String localFilePath;
 
-
     @GetMapping("/stats")
     public ResponseEntity<Map<String, Object>> getStorageStats() {
         File root = new File(localFilePath);

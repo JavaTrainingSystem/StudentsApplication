@@ -77,10 +77,10 @@ public class LoginServiceImpl implements LoginService {
             emailUtils.sendEmail(new EmailPayload(Arrays.asList(user.getEmail()),
                     loadOtpTemplate(otp), "Login Alert!!!"));
 
-            token = jwtUtils.createMFAToken(userName);
+            token = jwtUtils.createMFAToken(user.getUserName(), user.getIsAdmin());
 
         } else {
-            token = jwtUtils.createToken(userName);
+            token = jwtUtils.createToken(user.getUserName(), user.getIsAdmin());
         }
 
         TokenResponse tokenResponse = new TokenResponse(CommonConstants.SUCCESS,
@@ -101,7 +101,7 @@ public class LoginServiceImpl implements LoginService {
 
         if (otpRepo.isOtpValid(userEntity.getUserId(), otp)) {
             TokenResponse tokenResponse = new TokenResponse(CommonConstants.SUCCESS, 200,
-                    "Loggedin Successfulyy", jwtUtils.createToken(mfaLoggedUserName),
+                    "Loggedin Successfulyy", jwtUtils.createToken(userEntity.getUserName(), userEntity.getIsAdmin()),
                     userService.getProfilePhoto(mfaLoggedUserName));
 
             return tokenResponse;
@@ -142,10 +142,10 @@ public class LoginServiceImpl implements LoginService {
             emailUtils.sendEmail(new EmailPayload(Arrays.asList(user.getEmail()),
                     loadOtpTemplate(otp), "Login Alert!!!"));
 
-            token = jwtUtils.createMFAToken(userName);
+            token = jwtUtils.createMFAToken(user.getUserName(), user.getIsAdmin());
 
         } else {
-            token = jwtUtils.createToken(userName);
+            token = jwtUtils.createToken(user.getUserName(), user.getIsAdmin());
         }
 
         TokenResponse tokenResponse = new TokenResponse(CommonConstants.SUCCESS,

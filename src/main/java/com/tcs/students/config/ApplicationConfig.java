@@ -1,5 +1,6 @@
 package com.tcs.students.config;
 
+import com.tcs.students.constants.CommonConstants;
 import com.tcs.students.dao.UserRepo;
 import com.tcs.students.entity.UserEntity;
 import jakarta.annotation.PostConstruct;
@@ -19,6 +20,7 @@ public class ApplicationConfig {
             UserEntity user = new UserEntity();
             user.setUserName("admin");
             user.setPassword("admin");
+            user.setIsAdmin(CommonConstants.YES);
             userRepo.save(user);
         }
     }
