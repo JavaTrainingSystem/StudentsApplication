@@ -1,0 +1,1486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Audits</title>
+    <script src="js/studentmanagement.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <style>
+    .logo,
+.company-name,
+.profile-pic {
+  cursor: pointer;
+}
+
+
+    :root {
+      --primary: #4CAF50;
+      --danger: #f44336;
+      --warning: #FFC107;
+      --light: #f9f9f9;
+      --dark: #333;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', sans-serif;
+<!--      background: #eef1f5;-->
+background: #f5f6fa;
+      color: var(--dark);
+    }
+
+    .container {
+      max-width: 960px;
+      margin: auto;
+      padding: 20px;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+.table-wrapper table {
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+
+.table-wrapper {
+  background: white;
+  padding: 20px;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+}
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 16px;
+    }
+
+    th, td {
+      padding: 12px;
+      border-bottom: 1px solid #ddd;
+      text-align: center;
+        color: #2c3e50;
+         border-right: 1px solid #eee;
+    }
+
+    th:last-child,
+td:last-child {
+  border-right: none; /* Remove last column right border */
+}
+
+   thead {
+  background-color: #fafafa;
+}
+
+tbody tr {
+  border-bottom: 1px solid #e6e6e6;
+}
+
+
+    tbody tr:hover {
+       background-color: #f0f4ff;
+  transition: all 0.3s ease;
+      cursor: pointer;
+
+    }
+
+    .btn {
+      padding: 6px 12px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: 0.3s ease;
+      font-size: 14px;
+      margin-top: 5px;
+    }
+
+    .btn:hover {
+      opacity: 0.9;
+    }
+
+    .btn-primary {
+     background-color: #2ecc71;
+    }
+
+    .btn-danger {
+      background-color: var(--danger);
+      color: white;
+    }
+
+    .btn-warning {
+      background-color: var(--warning);
+      color: black;
+    }
+
+    .top-bar {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 10px;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.4);
+      z-index: 999; /* <- Existing modals */
+      justify-content: center;
+      align-items: center;
+    }
+
+
+    .modal.show {
+      display: flex;
+      animation: fadeIn 0.3s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .modal-content {
+      background: white;
+      padding: 25px;
+      width: 90%;
+      max-width: 400px;
+      border-radius: 12px;
+      position: relative;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    }
+
+    .modal-content h3 {
+      margin-top: 0;
+      text-align: center;
+    }
+
+    .modal-content label {
+      font-weight: 600;
+      display: block;
+      margin-top: 10px;
+    }
+
+    .modal-content input {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+
+    .modal-content .actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .modal-content .close {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      font-size: 22px;
+      color: #888;
+      cursor: pointer;
+    }
+
+    .menu-dropdown.drop-up {
+      top: auto !important;
+      bottom: 30px !important;
+    }
+
+
+     .menu-container {
+    position: relative;
+    overflow: visible; /* allow dropdown to extend outside container */
+  }
+
+    .menu-btn {
+      background: transparent;
+      border: none;
+      font-size: 22px;
+      cursor: pointer;
+    }
+   .menu-dropdown {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 100%;
+    background: white;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    border-radius: 6px;
+    overflow: visible;
+    z-index: 99999; /* bring on top of everything */
+    width: 130px;
+    transition: all 0.2s ease;
+  }
+  .menu-dropdown button {
+    display: block;
+    width: 100%;
+    border: none;
+    background: white;
+    padding: 10px 16px;
+    text-align: left;
+    cursor: pointer;
+    font-size: 14px;
+    border-bottom: 1px solid #eee;
+  }
+  .menu-dropdown button:last-child {
+    border-bottom: none;
+  }
+
+    .menu-dropdown button:hover {
+      background: #f1f1f1;
+    }
+
+    @media (max-width: 600px) {
+      table th, table td {
+        font-size: 14px;
+        padding: 10px;
+      }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+    #loaderOverlay .modal-content {
+      max-width: 300px;
+      text-align: center;
+    }
+    #loaderOverlay {
+      pointer-events: all;
+      z-index: 2000 !important;
+    }
+
+
+
+
+    #progressBarWrapper {
+      width: 100%;
+      background: #e0e0e0;
+      border-radius: 4px;
+      height: 8px;
+    }
+
+
+
+    </style>
+
+
+    <style>
+    .search-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin-right: 10px;
+}
+
+.search-container input[type="text"] {
+  padding: 8px 30px 8px 12px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 20px;
+  outline: none;
+  transition: all 0.3s ease;
+  background-color: white;
+}
+
+.search-container input[type="text"]:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
+}
+
+.search-container .search-icon {
+  position: absolute;
+  right: 10px;
+  font-size: 16px;
+  color: #888;
+  pointer-events: none;
+}
+
+
+
+    </style>
+
+    <style>
+        .main-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: white;
+  padding: 10px 20px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+}
+
+.logo {
+  width: 24px;
+  margin-right: 8px;
+}
+
+.company-name {
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+}
+
+.header-center .search-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 300px;
+}
+
+.header-center input {
+  padding: 8px 12px 8px 30px;
+  width: 100%;
+  border: 1px solid #ccc;
+  border-radius: 20px;
+}
+
+.header-center .search-icon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #888;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.menu-toggle {
+  background: none;
+  border: none;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+.profile-pic {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .header-center {
+    display: none;
+  }
+}
+
+    </style>
+
+    <style>
+
+        .sidebar {
+  position: fixed;
+  top: 0;
+  left: -260px;
+  width: 260px;
+  height: 100%;
+  background-color: #fff;
+  box-shadow: 2px 0 8px rgba(0,0,0,0.1);
+  transition: left 0.3s ease;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar.open {
+  left: 0;
+}
+
+.sidebar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid #eee;
+}
+
+.sidebar-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+}
+
+.sidebar-close {
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: #888;
+  cursor: pointer;
+}
+
+.sidebar-menu {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sidebar-menu li {
+  padding: 16px 20px;
+  cursor: pointer;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 16px;
+  color: #333;
+  transition: background 0.2s;
+}
+
+.sidebar-menu li:hover {
+  background-color: #f5f5f5;
+}
+
+.sidebar-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.3);
+  z-index: 9998;
+  display: none;
+}
+
+.sidebar-overlay.show {
+  display: block;
+}
+
+    </style>
+
+    <style>
+        .profile-dropdown-container {
+  position: relative;
+}
+
+.profile-dropdown {
+  display: none;
+  position: absolute;
+  right: 0;
+  top: 40px;
+  background-color: white;
+  border: 1px solid #eee;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  border-radius: 8px;
+  overflow: hidden;
+  z-index: 10000;
+  width: 140px;
+}
+
+.profile-dropdown button {
+  width: 100%;
+  padding: 10px 16px;
+  border: none;
+  background: white;
+  font-size: 14px;
+  text-align: left;
+  cursor: pointer;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.profile-dropdown button:last-child {
+  border-bottom: none;
+}
+
+.profile-dropdown button:hover {
+  background-color: #f9f9f9;
+}
+
+    </style>
+
+
+    <style>
+        .search-popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.4);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 99999;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.search-popup.show {
+  display: flex;
+}
+
+.search-box {
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  width: 90%;
+  max-width: 600px;
+  animation: slideUp 0.4s ease-in-out;
+}
+
+.search-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.search-input {
+  width: 100%;
+  padding: 12px 16px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 26px;
+  color: #333;
+  margin-left: 10px;
+  cursor: pointer;
+}
+
+.search-result {
+  background: #f1f1f1;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  font-size: 16px;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(40px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+    </style>
+
+    <style>
+        .search-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.4);
+  z-index: 9998;
+  display: none;
+}
+
+.command-palette {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.command-palette.show,
+.search-overlay.show {
+  display: flex;
+}
+
+.command-box {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 600px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+  animation: slideUp 0.4s ease-in-out;
+}
+
+.command-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.command-header input {
+  flex: 1;
+  padding: 12px 16px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 16px;
+}
+
+.command-close {
+  font-size: 22px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #888;
+}
+
+.command-results {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.command-results li {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  background: #f9f9f9;
+  transition: background 0.2s ease;
+}
+
+.command-results li:hover {
+  background-color: #e6f4ea;
+}
+
+.command-results i {
+  margin-right: 12px;
+  font-size: 18px;
+  color: #4CAF50;
+}
+
+/* Animations */
+@keyframes slideUp {
+  from {
+    transform: translateY(40px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+
+    </style>
+
+    <style>
+.tab-wrapper {
+  padding: 20px;
+  margin-top: 10px;
+}
+
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  position: relative;
+  margin-bottom: 10px;
+  justify-content: center;
+}
+
+.tab {
+  padding: 10px 20px;
+  background: #ffffff;
+  border: 2px solid #ccc;
+  border-radius: 8px 8px 0 0;
+  cursor: pointer;
+  font-weight: 600;
+  color: #333;
+  position: relative;
+  transition: all 0.3s ease-in-out;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  min-width: 120px;
+  text-align: center;
+}
+
+.tab:hover {
+  background: #eafaf1;
+  border-color: #4CAF50;
+  transform: translateY(-2px);
+}
+
+.tab.active {
+  background: #f5f6fa;
+  border-bottom: 2px solid white;
+  color: #4CAF50;
+  z-index: 2;
+}
+
+.tab.active::after {
+  content: "";
+  position: absolute;
+  bottom: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-top: 12px solid #4CAF50;
+}
+
+.tab-content {
+  display: none;
+  animation: fadeInTab 0.5s ease-in-out;
+  border: 2px solid #ccc;
+  border-radius: 0 8px 8px 8px;
+  padding: 20px;
+  background: white;
+  min-height: 300px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+}
+
+/* Fade-in animation for tab content */
+@keyframes fadeInTab {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 768px) {
+  .tab {
+    flex: 1 1 45%;
+    font-size: 14px;
+    padding: 8px 12px;
+  }
+
+  .tab-content {
+    padding: 15px;
+    font-size: 14px;
+  }
+}
+</style>
+
+    <style>
+.profile-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 40px;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.profile-section {
+  text-align: center;
+}
+
+.profile-section img {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #4CAF50;
+  margin-bottom: 10px;
+}
+
+.password-section {
+  min-width: 300px;
+  max-width: 400px;
+}
+
+.password-section h3 {
+  margin-bottom: 15px;
+  font-size: 20px;
+  color: #333;
+}
+
+.password-section input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 15px;
+}
+
+.password-section .btn {
+  width: 100%;
+}
+</style>
+
+    <style>
+.desktop-only { display: block; }
+.mobile-only { display: none; }
+
+@media (max-width: 768px) {
+  .desktop-only { display: none; }
+  .mobile-only { display: block; }
+}
+
+.card {
+  background: white;
+  margin-bottom: 12px;
+  padding: 16px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.card-title {
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.card-row {
+  margin: 4px 0;
+}
+
+.card .btn {
+  margin-top: 10px;
+}
+</style>
+    <style>
+  .sub-tab-content, .sub-sub-tab-content {
+    padding: 20px 0;
+  }
+
+  .tab.sub-tab, .tab.sub-sub-tab {
+    font-size: 14px;
+    padding: 6px 16px;
+    border-radius: 6px 6px 0 0;
+    background: #fff;
+    border: 1px solid #ccc;
+  }
+
+  .tab.sub-tab.active, .tab.sub-sub-tab.active {
+    background: #e7f7ec;
+    color: #4CAF50;
+    border-bottom: 2px solid white;
+  }
+</style>
+
+    <style>
+
+    .dashboard-chart {
+  width: 350px;
+  height: 260px;
+  padding: 16px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+  overflow: hidden;
+}
+
+
+.dashboard-chart canvas {
+  width: 100% !important;
+  height: 180px !important; /* 👈 adjust chart height */
+}
+
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* 👈 make columns smaller */
+  gap: 16px;
+  padding: 10px;
+  justify-items: center; /* center chart in column */
+}
+
+@media (max-width: 600px) {
+  .dashboard-chart {
+    width: 90%;
+    max-height: 250px;
+  }
+}
+
+    </style>
+
+
+    <style>
+        #tab3 ul {
+            padding-left: 0;
+            margin: 0;
+        }
+
+        #tab3 ul li {
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+            font-size: 14px;
+            color: #2c3e50;
+        }
+
+        #tab3 h3 {
+            text-align: center;
+            color: #2c3e50;
+            margin-top: 0;
+            margin-bottom: 12px;
+        }
+
+        #tab3 canvas {
+            width: 100% !important;
+            max-width: 500px;
+            margin: 0 auto;
+            display: block;
+        }
+
+        @media (max-width: 600px) {
+            #tab3 canvas {
+                max-width: 100%;
+            }
+
+            #tab3 table th, #tab3 table td {
+                font-size: 13px;
+                padding: 8px;
+            }
+
+            #tab3 ul li {
+                font-size: 13px;
+            }
+        }
+    </style>
+
+
+    <style>
+        #folder-viewer {
+            position: fixed;
+            top: 10%;
+            left: 10%;
+            width: 80%;
+            max-height: 80%;
+            background: white;
+            border: 1px solid #ccc;
+            padding: 20px;
+            overflow: auto;
+            z-index: 9999;
+            box-shadow: 0 0 15px rgba(0,0,0,0.3);
+        }
+        #folder-viewer ul {
+            list-style: none;
+        }
+        #folder-viewer li {
+            margin: 4px 0;
+            cursor: pointer;
+        }
+    </style>
+
+
+
+    <style>
+        #folder-viewer {
+            position: fixed;
+            top: 10%;
+            left: 10%;
+            width: 80%;
+            max-height: 80%;
+            overflow-y: auto;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 0 25px rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            z-index: 10000;
+        }
+        .folder-tree {
+            list-style: none;
+            padding-left: 0;
+        }
+        .folder-tree li {
+            font-family: 'Segoe UI', sans-serif;
+        }
+    </style>
+    <style>
+  .audit-label {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-weight: bold;
+  font-size: 13px;
+  border: 1px solid;
+}
+
+.audit-created {
+  color: #2e7d32;
+  border-color: #2e7d32;
+  background-color: #e8f5e9;
+}
+
+.audit-updated {
+  color: #ef6c00;
+  border-color: #ef6c00;
+  background-color: #fff3e0;
+}
+
+.audit-deleted {
+  color: #c62828;
+  border-color: #c62828;
+  background-color: #ffebee;
+}
+
+
+</style>
+
+
+</head>
+<body>
+
+<!-- Top Header -->
+<header class="main-header">
+    <div class="header-left" onclick="navigateTo('home')">
+        <img src="images/studentslogo.png" alt="Logo" class="logo"/>
+        <span class="company-name" onclick="navigateTo('home')">SMS</span>
+    </div>
+    <div class="header-center">
+        <div class="search-wrapper">
+            <input type="text" placeholder="Search" onclick="toggleSearchPopup()" readonly />
+            <span class="search-icon">🔍</span>
+        </div>
+    </div>
+    <div class="header-right">
+        <button class="menu-toggle">☰</button>
+        <div class="profile-dropdown-container">
+            <img id="profilePhotoId"  src="images/default-profile.jpg" alt="Profile" class="profile-pic" onclick="toggleProfileDropdown()" />
+            <div id="profileDropdown" class="profile-dropdown">
+                <button onclick="navigateTo('settings')">⚙️ Settings</button>
+                <button onclick="logout()">🚪 Logout</button>
+            </div>
+        </div>
+
+    </div>
+</header>
+
+<div id="searchOverlay" class="search-overlay" onclick="closeSearchCommandPalette()"></div>
+
+<div id="commandPalette" class="command-palette">
+    <div class="command-box" onclick="event.stopPropagation()">
+        <div class="command-header">
+            <input type="text" id="commandInput" placeholder="Type to search..." oninput="filterCommands()" autofocus />
+            <button class="command-close" onclick="closeSearchCommandPalette()">×</button>
+        </div>
+        <ul id="commandResults" class="command-results">
+            <!-- Dynamically filled -->
+        </ul>
+    </div>
+</div>
+
+
+
+<!-- Sidebar -->
+<aside id="sidebar" class="sidebar">
+    <div class="sidebar-header">
+        <span class="sidebar-title">Menu</span>
+        <button class="sidebar-close" onclick="toggleSidebar()">×</button>
+    </div>
+    <ul class="sidebar-menu">
+        <li onclick="navigateTo('home')">🏠 Home</li>
+        <li onclick="navigateTo('students')">🎓 Students</li>
+        <li onclick="navigateTo('audit')">🕵️ Audit</li>
+    </ul>
+</aside>
+<div id="sidebarOverlay" class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+
+
+
+
+<!-- Message Popup Modal -->
+<div class="modal" id="messageModal">
+    <div class="modal-content" style="text-align: center;">
+        <span class="close" onclick="closeModal('messageModal')">&times;</span>
+        <h3 id="messageTitle">Message</h3>
+        <p id="messageText" style="margin: 15px 0;"></p>
+        <div class="actions" style="justify-content: center;">
+            <button class="btn btn-primary" onclick="closeModal('messageModal')">Okay</button>
+        </div>
+    </div>
+</div>
+
+
+<div id="loaderOverlay" class="modal">
+    <div class="modal-content">
+        <h3 id="loaderText">Connecting to server...</h3>
+        <div id="progressBarWrapper" style="display:none; margin-top: 10px;">
+            <div id="progressBar" style="width:0%; height:8px; background:#4CAF50; border-radius:4px;"></div>
+        </div>
+    </div>
+</div>
+
+<div class="tab-wrapper">
+    <div class="tabs">
+        <div class="tab" data-role="user-audit" onclick="switchTab('tab1')">🕵️‍♂️ User Audit</div>
+        <div class="tab" data-role="student-audit" onclick="switchTab('tab2')">🎓 Student Audit</div>
+    </div>
+
+    <div class="tab-content" id="tab1">
+        <div class="table-wrapper">
+            <table id="userAuditTable">
+                <thead>
+                <tr>
+                    <th>Audit Type</th>
+                    <th>User Name</th>
+                    <th>Audit Date</th>
+                    <th>Details</th>
+                </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+    <div class="tab-content" id="tab2">
+        <div class="table-wrapper">
+            <table id="studentAuditTable">
+                <thead>
+                <tr>
+                    <th>Audit Type</th>
+                    <th>User Name</th>
+                    <th>Audit Date</th>
+                    <th>Details</th>
+                </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+
+
+
+
+</div>
+
+
+
+
+<!-- Delete Confirmation Modal -->
+<div class="modal" id="deleteModal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal('deleteModal')">&times;</span>
+        <h3>Delete Confirmation</h3>
+        <p>Are you sure you want to delete this user?</p>
+        <div class="actions">
+            <button class="btn btn-danger" onclick="deleteUser()">Yes, Delete</button>
+            <button class="btn btn-warning" onclick="closeModal('deleteModal')">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<script>
+
+  let deleteId = null;
+
+  // ---------------------- Loader Controls -------------------------
+  function showLoader(message = "Connecting to server...") {
+    document.getElementById("loaderText").innerText = message;
+    document.getElementById("progressBarWrapper").style.display = "none";
+    document.getElementById("progressBar").style.width = "0%";
+    document.getElementById("loaderOverlay").classList.add("show");
+  }
+
+  function updateLoaderMessage(message) {
+    document.getElementById("loaderText").innerText = message;
+  }
+
+  function updateProgress(percent) {
+    document.getElementById("progressBarWrapper").style.display = "block";
+    document.getElementById("progressBar").style.width = percent + "%";
+  }
+
+  function hideLoader() {
+    document.getElementById("loaderOverlay").classList.remove("show");
+  }
+
+
+  // ---------------------- File Upload with Progress ------------------
+
+  // ---------------------- File Download with Progress ------------------
+
+  // ---------------------- UI Controls ----------------------
+
+  function closeModal(id) {
+    document.getElementById(id).classList.remove('show');
+  }
+
+  document.addEventListener('click', () => {
+    document.querySelectorAll('.menu-dropdown').forEach(menu => menu.style.display = 'none');
+  });
+
+  document.addEventListener('keydown', function (e) {
+    const modalOpen = document.getElementById('studentModal').classList.contains('show') || document.getElementById('deleteModal').classList.contains('show');
+    if (modalOpen && e.key === 'Escape') {
+      closeModal('studentModal');
+      closeModal('deleteModal');
+    }
+    if (e.key === 'Enter' && document.getElementById('studentModal').classList.contains('show')) {
+      const updateVisible = document.getElementById('updateBtn').style.display === 'block';
+      updateVisible ? updateStudent() : submitStudent();
+    }
+  });
+
+  document.getElementById('studentMobile').addEventListener('input', function (e) {
+    this.value = this.value.replace(/\D/g, '');
+  });
+
+
+
+
+
+
+
+
+
+  function triggerFileInput(studentId, event) {
+    event.stopPropagation(); // ✅ prevents row click
+    const input = document.getElementById(`fileInput-${studentId}`);
+    input.click();
+  }
+
+  function showMessage(title, message) {
+    document.getElementById('messageTitle').textContent = title || "Info";
+    document.getElementById('messageText').textContent = message || "";
+    document.getElementById('messageModal').classList.add('show');
+  }
+
+
+
+
+</script>
+<script>
+  function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+    const isOpen = sidebar.classList.contains('open');
+
+    if (isOpen) {
+      sidebar.classList.remove('open');
+      overlay.classList.remove('show');
+    } else {
+      sidebar.classList.add('open');
+      overlay.classList.add('show');
+    }
+  }
+
+  // Attach click event to menu toggle button
+  document.querySelector('.menu-toggle').addEventListener('click', toggleSidebar);
+
+</script>
+
+<script>
+function toggleProfileDropdown() {
+  const dropdown = document.getElementById('profileDropdown');
+  dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+}
+
+// Close dropdown when clicking outside
+document.addEventListener('click', function(event) {
+  const isProfile = event.target.closest('.profile-dropdown-container');
+  if (!isProfile) {
+    document.getElementById('profileDropdown').style.display = 'none';
+  }
+});
+
+// Placeholder functions
+function goToSettings() {
+  showMessage("Info", "Redirecting to Settings...");
+  // You can redirect like: window.location.href = '/settings';
+}
+
+</script>
+
+<script>
+    function toggleSearchPopup() {
+  const popup = document.getElementById('searchPopup');
+  popup.classList.toggle('show');
+}
+
+// Optional: close when pressing Escape
+document.addEventListener('keydown', function (e) {
+  if (e.key === 'Escape') {
+    document.getElementById('searchPopup').classList.remove('show');
+  }
+});
+
+
+</script>
+<script>
+
+function switchTab(tabId) {
+  // Hide all tab content
+  document.querySelectorAll('.tab-content').forEach(tab => {
+    tab.style.display = 'none';
+  });
+
+  // Remove active class from all tabs
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.classList.remove('active');
+  });
+
+  // Show selected tab and activate its button
+  const content = document.getElementById(tabId);
+  content.style.display = 'block';
+  content.classList.add('animate');
+
+  const tabs = document.querySelectorAll('.tab');
+  tabs.forEach(t => {
+    if (t.getAttribute('onclick') && t.getAttribute('onclick').includes(tabId)) {
+      t.classList.add('active');
+    }
+  });
+
+  // 👉 Auto-select default sub-tab if DB Monitoring
+  if (tabId === 'tab4') {
+    switchSubTab('appStorage'); // Auto open App Storage
+    switchAdvancedTab('connections'); // Optional: default for nested Advanced tab
+  }
+}
+
+
+ window.onload = function () {
+    const allTabs = document.querySelectorAll('.tab');
+    const allContents = document.querySelectorAll('.tab-content');
+
+    allTabs.forEach((tab, index) => {
+      const role = tab.getAttribute('data-role');
+      const content = allContents[index];
+
+      if (role === 'admin' && !adminFlag) {
+        tab.style.display = 'none';
+        if (content) content.style.display = 'none';
+      }
+    });
+
+    // Activate first visible tab
+    const visibleTabs = Array.from(allTabs).filter(tab => tab.style.display !== 'none');
+    if (visibleTabs.length > 0) {
+      visibleTabs[0].classList.add('active');
+      const tabId = visibleTabs[0].getAttribute('onclick').match(/'(.*?)'/)[1];
+      document.getElementById(tabId).style.display = 'block';
+    }
+  };
+</script>
+
+
+<script src="js/search.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+
+init();
+
+function init(){
+var adminFlag = false;
+if(getSubFromJWT()=="admin"){
+    adminFlag = true;
+}
+
+if(adminFlag){
+loadAuditData('userAudit');
+}else{
+loadAuditData('studentAudit');
+}
+
+
+}
+function loadAuditData(type) {
+  const tableId = type === 'userAudit' ? 'userAuditTable' : 'studentAuditTable';
+  const tbody = document.querySelector(`#${tableId} tbody`);
+  tbody.innerHTML = '';
+
+  type = type == 'studentAudit' ? 'STUDENTS' : 'USERS';
+
+  fetch(`/api/v1/audit?featureType=${type}`, {
+    headers: {
+      'Authorization': getToken()
+    }
+  })
+    .then(res => res.json())
+    .then(data => {
+      data.forEach(entry => {
+        const tr = document.createElement('tr');
+
+        let className = '';
+        if (entry.auditType === 'CREATED') className = 'audit-label audit-created';
+        else if (entry.auditType === 'UPDATED') className = 'audit-label audit-updated';
+        else if (entry.auditType === 'DELETED') className = 'audit-label audit-deleted';
+
+        tr.innerHTML = `
+          <td><span class="${className}">${entry.auditType}</span></td>
+          <td>${entry.userName}</td>
+          <td>${entry.auditDate}</td>
+          <td>${entry.details}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    })
+    .catch(err => {
+      console.error("Audit Load Error:", err);
+      showMessage("Error", "Failed to load audit data.");
+    });
+}
+
+// Modify switchTab to load audit data
+function switchTab(tabId) {
+  document.querySelectorAll('.tab-content').forEach(tab => {
+    tab.style.display = 'none';
+  });
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.classList.remove('active');
+  });
+  const content = document.getElementById(tabId);
+  content.style.display = 'block';
+  content.classList.add('animate');
+  const tabs = document.querySelectorAll('.tab');
+  tabs.forEach(t => {
+    if (t.getAttribute('onclick') && t.getAttribute('onclick').includes(tabId)) {
+      t.classList.add('active');
+    }
+  });
+  if (tabId === 'tab1') loadAuditData('userAudit');
+  else if (tabId === 'tab2') loadAuditData('studentAudit');
+  else if (tabId === 'tab4') {
+    switchSubTab('appStorage');
+    switchAdvancedTab('connections');
+  }
+}
+</script>
+
+
+</body>
+</html>
+
